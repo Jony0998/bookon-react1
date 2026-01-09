@@ -1,0 +1,65 @@
+.admin-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-top: 80px;
+}
+
+.admin-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-title {
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.admin-card {
+  padding: 24px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.admin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.admin-card:nth-child(2) {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.admin-card:nth-child(3) {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.admin-card:nth-child(4) {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.admin-stat-number {
+  font-weight: 700;
+  margin-top: 12px;
+  color: white;
+}
+
+.admin-main-content {
+  min-height: 400px;
+  background: white;
+  border-radius: 8px;
+}
+
+@media (max-width: 600px) {
+  .admin-page {
+    padding-top: 60px;
+  }
+
+  .admin-title {
+    font-size: 2rem;
+  }
+}
+
