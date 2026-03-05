@@ -4,8 +4,8 @@ import  HomePage  from "./screens/homePage";
 import  ProductsPage  from "./screens/productsPage";
 import  OrdersPage  from "./screens/ordersPage";
 import  UsersPage  from "./screens/userPage";
-import  HomeNavbar  from "./components/headers/HomeNavbar";
-import  OtherNavbar  from "./components/headers/OtherNavbar";
+import HomeNavbar from "./components/headers/HomeNavbar";
+import OtherNavbar from "./components/headers/OtherNavbar";
 import  Footer  from "./components/footer";
 import  HelpPage  from "./screens/helpPage";
 import useBasket from "./hooks/useBasket";
@@ -34,6 +34,15 @@ function App() {
   const handleSignupClose = () => setSignupOpen(false);
   const handleLoginClose = () => setLoginOpen(false);
 
+  const openLogin = () => {
+    setSignupOpen(false);
+    setLoginOpen(true);
+  };
+  const openSignup = () => {
+    setLoginOpen(false);
+    setSignupOpen(true);
+  };
+
   const handleLogoutClick = (e: React.MouseEvent<HTMLElement> ) => {
     setAnchorEl(e.currentTarget);
   };
@@ -60,8 +69,8 @@ function App() {
         onRemove={onRemove}
         onDelete={onDelete}
         onDeleteAll={onDeleteAll}
-        setSignupOpen={setSignupOpen}
-        setLoginOpen={setLoginOpen}
+        openSignup={openSignup}
+        openLogin={openLogin}
         anchorEl={anchorEl}
         handleLogoutClick={handleLogoutClick}
         handleCloseLogout={handleCloseLogout}
@@ -74,8 +83,8 @@ function App() {
         onRemove={onRemove}
         onDelete={onDelete}
         onDeleteAll={onDeleteAll} 
-        setSignupOpen={setSignupOpen}
-        setLoginOpen={setLoginOpen}
+        openSignup={openSignup}
+        openLogin={openLogin}
         anchorEl={anchorEl}
         handleLogoutClick={handleLogoutClick}
         handleCloseLogout={handleCloseLogout}

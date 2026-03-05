@@ -7,14 +7,14 @@ import { serverApi } from "../../../lib/config";
 import { Logout, Login, MenuBook } from "@mui/icons-material";
 
 
-interface OtherNavbarProps {
+export interface OtherNavbarProps {
     cartItems: CartItem[];
     onAdd: (item: CartItem) => void;
     onRemove: (item: CartItem) => void;
     onDelete: (item: CartItem) => void;
     onDeleteAll: () => void;
-    setSignupOpen: (isOpen: boolean) => void;
-    setLoginOpen: (isOpen: boolean) => void;
+    openSignup: () => void;
+    openLogin: () => void;
     handleLogoutClick: (e: React.MouseEvent<HTMLElement>) => void;
     anchorEl: HTMLElement | null;
     handleCloseLogout: () => void;
@@ -28,8 +28,8 @@ export default function OtherNavbar(props: OtherNavbarProps) {
          onRemove,
          onDelete,
          onDeleteAll,
-         setSignupOpen,
-         setLoginOpen,
+         openSignup,
+         openLogin,
          handleLogoutClick,
          anchorEl,
          handleCloseLogout,
@@ -86,7 +86,7 @@ export default function OtherNavbar(props: OtherNavbarProps) {
                 <Button 
                     className="login-button"
                     variant="contained"
-                    onClick={() => setLoginOpen(true)}
+                    onClick={openLogin}
                     startIcon={<Login />}
                 >
                     Login

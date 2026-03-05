@@ -61,17 +61,15 @@ export default function Products(props: ProductsProps) {
         .then((data) => {
           setProducts(data);
           // If returned data equals limit, there might be more pages
-          // We'll show pagination if current page has full limit of items
           if (data.length === productSearch.limit) {
-            // Assume there's at least one more page
             setTotalPages(productSearch.page + 1);
           } else {
-            // This is the last page
             setTotalPages(productSearch.page);
           }
         })
         .catch((err) => console.log(err));
-  }, [productSearch, setProducts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setProducts is stable (Redux dispatch)
+  }, [productSearch.page, productSearch.limit, productSearch.order, productSearch.search, productSearch.productCollection]);
 
 
   useEffect(() => {

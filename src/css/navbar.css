@@ -2,15 +2,25 @@
 
 .home-navbar {
     width: 100%;
-    height: 773px;
+    min-height: 620px;
     display: flex;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 100%);
-    background-size: cover;
+    background: linear-gradient(160deg, #0f0f1a 0%, #1a1a2e 25%, #16213e 60%, #0f3460 100%);
+    background-size: 200% 200%;
     position: relative;
     overflow: hidden;
+    animation: bannerBgShift 12s ease-in-out infinite;
 }
 
-/* Background overlay with book theme */
+@keyframes bannerBgShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Modern gradient mesh overlay - animated */
 .home-navbar::before {
     content: '';
     position: absolute;
@@ -19,9 +29,20 @@
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.15) 0%, transparent 50%);
+        radial-gradient(ellipse 80% 50% at 70% 40%, rgba(102, 126, 234, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 80% at 90% 80%, rgba(118, 75, 162, 0.2) 0%, transparent 45%),
+        radial-gradient(ellipse 50% 50% at 20% 60%, rgba(255, 215, 0, 0.08) 0%, transparent 50%);
     z-index: 0;
+    animation: meshPulse 6s ease-in-out infinite;
+}
+
+@keyframes meshPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
 }
 
 .home-navbar::after {
@@ -32,8 +53,20 @@
     right: 0;
     bottom: 0;
     background-image: 
-        repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.02) 2px, rgba(255, 255, 255, 0.02) 4px);
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
     z-index: 0;
+    animation: gridMove 25s linear infinite;
+}
+
+@keyframes gridMove {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(48px, 48px);
+    }
 }
 
 .home-navbar > * {
@@ -43,7 +76,8 @@
 
 .home-navbar .navbar-container {
     margin-top: 55px;
-    height: 642px;
+    min-height: 520px;
+    padding-bottom: 48px;
 }
 
 .home-navbar .navbar-container .menu {
@@ -305,22 +339,24 @@
     box-shadow: 0 2px 10px rgba(255, 215, 0, 0.6);
 }
 
-/* Header Frame - Main Content Area */
+/* Header Frame - Hero banner */
 .home-navbar .navbar-container .header-frame {
-    margin-top: 142px;
-    height: 462px;
+    margin-top: 100px;
+    min-height: 420px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 40px;
+    gap: 48px;
+    width: 100%;
 }
 
 .home-navbar .navbar-container .header-frame .detail {
-    width: 510px;
+    max-width: 560px;
     display: flex;
     flex-direction: column;
     animation: fadeInLeft 0.8s ease-out;
+    flex: 1;
 }
 
 @keyframes fadeInLeft {
@@ -345,10 +381,21 @@
     color: #ffffff;
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     margin-bottom: 15px;
-    background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+    background: linear-gradient(90deg, #ffffff, #e0e0e0, #ffffff, #e8e8e8);
+    background-size: 200% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: titleShine 4s ease-in-out infinite;
+}
+
+@keyframes titleShine {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 .home-navbar .navbar-container .header-frame .detail .well-txt {
@@ -364,6 +411,18 @@
     text-shadow: 0 2px 15px rgba(255, 215, 0, 0.4);
     margin-bottom: 10px;
     font-style: italic;
+    animation: subtitleGlow 3s ease-in-out infinite;
+}
+
+@keyframes subtitleGlow {
+    0%, 100% {
+        text-shadow: 0 2px 15px rgba(255, 215, 0, 0.4);
+        opacity: 1;
+    }
+    50% {
+        text-shadow: 0 2px 25px rgba(255, 215, 0, 0.7), 0 0 30px rgba(255, 215, 0, 0.2);
+        opacity: 0.95;
+    }
 }
 
 .home-navbar .navbar-container .header-frame .detail .service-txt {
@@ -480,15 +539,15 @@
     transform: rotate(360deg) scale(1.2);
 }
 
-/* Logo Frame - Right Side */
-.home-navbar .navbar-container .header-frame .logo-frame {
-    margin-top: 0;
-    width: 690px;
-    height: 419px;
+/* Banner visual - book-themed right side */
+.home-navbar .navbar-container .header-frame .banner-visual {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    min-height: 320px;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     animation: fadeInRight 0.8s ease-out;
 }
 
@@ -503,100 +562,188 @@
     }
 }
 
-.home-navbar .navbar-container .header-frame .logo-frame::before {
+/* Floating book pages - kitob sahifalari animatsiyasi */
+.home-navbar .navbar-container .header-frame .banner-visual .book-pages {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.home-navbar .navbar-container .header-frame .banner-visual .book-page {
+    position: absolute;
+    border-radius: 4px 12px 12px 4px;
+    box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.25),
+        inset 1px 0 0 rgba(255, 255, 255, 0.1);
+    animation: pageFloat 6s ease-in-out infinite;
+    overflow: hidden;
+}
+
+/* Sahifa ichidagi "matn qatorlari" - o'qish hissi */
+.home-navbar .navbar-container .header-frame .banner-visual .book-page::after {
     content: '';
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+    top: 12px;
+    left: 10px;
+    right: 10px;
+    bottom: 12px;
+    background: repeating-linear-gradient(
+        transparent,
+        transparent 8px,
+        rgba(180, 160, 120, 0.15) 8px,
+        rgba(180, 160, 120, 0.15) 9px
+    );
+    border-radius: 2px;
+    pointer-events: none;
+    animation: lineFade 4s ease-in-out infinite;
+}
+
+@keyframes lineFade {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Sahifa 1 - katta, orqa */
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-1 {
+    width: 100px;
+    height: 140px;
+    top: 18%;
+    right: 22%;
+    background: linear-gradient(135deg, rgba(255, 248, 235, 0.9) 0%, rgba(250, 240, 220, 0.85) 50%, rgba(245, 230, 200, 0.9) 100%);
+    animation-delay: 0s;
+}
+
+/* Sahifa 2 - o‘rta */
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-2 {
+    width: 88px;
+    height: 125px;
+    top: 28%;
+    right: 35%;
+    background: linear-gradient(135deg, rgba(255, 252, 242, 0.95) 0%, rgba(253, 245, 230, 0.9) 100%);
+    animation-delay: -1.2s;
+}
+
+/* Sahifa 3 - kichik, oldingi */
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-3 {
+    width: 72px;
+    height: 100px;
+    bottom: 28%;
+    right: 18%;
+    background: linear-gradient(135deg, rgba(255, 250, 240, 0.9) 0%, rgba(248, 238, 218, 0.85) 100%);
+    animation-delay: -2.5s;
+}
+
+/* Sahifa 4 */
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-4 {
+    width: 65px;
+    height: 90px;
+    bottom: 35%;
+    left: 15%;
+    background: linear-gradient(135deg, rgba(255, 248, 235, 0.85) 0%, rgba(245, 235, 210, 0.8) 100%);
+    animation-delay: -3.8s;
+}
+
+/* Sahifa 5 - yuqori chap */
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-5 {
+    width: 55px;
+    height: 78px;
+    top: 25%;
+    left: 25%;
+    background: linear-gradient(135deg, rgba(253, 248, 240, 0.9) 0%, rgba(250, 242, 228, 0.85) 100%);
+    animation-delay: -4.5s;
+}
+
+@keyframes pageFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(var(--page-rotate, 0deg));
+    }
+    25% {
+        transform: translateY(-12px) rotate(calc(var(--page-rotate, 0deg) + 3deg));
+    }
+    50% {
+        transform: translateY(5px) rotate(calc(var(--page-rotate, 0deg) - 2deg));
+    }
+    75% {
+        transform: translateY(-8px) rotate(calc(var(--page-rotate, 0deg) + 2deg));
+    }
+}
+
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-1 {
+    --page-rotate: -8deg;
+}
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-2 {
+    --page-rotate: 5deg;
+}
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-3 {
+    --page-rotate: -12deg;
+}
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-4 {
+    --page-rotate: 10deg;
+}
+.home-navbar .navbar-container .header-frame .banner-visual .book-page-5 {
+    --page-rotate: -5deg;
+}
+
+/* Yumshoq gradient fon (kitob atrofidagi yorug‘lik) */
+.home-navbar .navbar-container .header-frame .banner-visual .banner-shape {
+    position: absolute;
     border-radius: 50%;
-    filter: blur(40px);
-    z-index: 0;
+    filter: blur(50px);
+    opacity: 0.6;
+    animation: shapeFloat 6s ease-in-out infinite;
 }
 
-.home-navbar .navbar-container .header-frame .logo-frame .logo-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-    position: relative;
-    z-index: 1;
+.home-navbar .navbar-container .header-frame .banner-visual .banner-shape-1 {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.35) 0%, rgba(118, 75, 162, 0.3) 100%);
+    top: 15%;
+    right: 15%;
+    animation-delay: 0s;
 }
 
-.home-navbar .navbar-container .header-frame .logo-frame .logo-img {
-    width: 280px;
-    height: 280px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.3));
-    transition: all 0.5s ease;
-    animation: float 3s ease-in-out infinite;
-    color: #667eea;
+.home-navbar .navbar-container .header-frame .banner-visual .banner-shape-2 {
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(218, 165, 32, 0.12) 100%);
+    bottom: 25%;
+    left: 10%;
+    animation-delay: -2s;
 }
 
-@keyframes float {
+@keyframes shapeFloat {
     0%, 100% {
-        transform: translateY(0px);
+        transform: translate(0, 0) scale(1);
     }
-    50% {
-        transform: translateY(-15px);
+    33% {
+        transform: translate(15px, -18px) scale(1.08);
     }
-}
-
-.home-navbar .navbar-container .header-frame .logo-frame .logo-img:hover {
-    transform: scale(1.05) translateY(-10px);
-    filter: drop-shadow(0 15px 50px rgba(102, 126, 234, 0.5));
-    color: #FFD700 !important;
-}
-
-.home-navbar .navbar-container .header-frame .logo-frame .logo-text-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-align: center;
-}
-
-.home-navbar .navbar-container .header-frame .logo-frame .logo-main-text {
-    font-family: 'Poppins', sans-serif;
-    font-size: 48px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #ffffff 0%, #FFD700 50%, #ffffff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 3px;
-    text-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
-    animation: textGlow 3s ease-in-out infinite;
-}
-
-@keyframes textGlow {
-    0%, 100% {
-        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
-    }
-    50% {
-        filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+    66% {
+        transform: translate(-10px, 12px) scale(0.95);
     }
 }
 
-.home-navbar .navbar-container .header-frame .logo-frame .logo-sub-text {
-    font-family: 'Poppins', sans-serif;
-    font-size: 18px;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.8);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.9;
+.home-navbar .navbar-container .header-frame .banner-visual .banner-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
+    pointer-events: none;
 }
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-    .home-navbar .navbar-container .header-frame .logo-frame {
-        width: 500px;
-        height: 350px;
+    .home-navbar .navbar-container .header-frame .banner-visual {
+        max-width: 380px;
+        min-height: 280px;
     }
     
     .home-navbar .navbar-container .header-frame .detail .head-main-txt {
@@ -611,25 +758,26 @@
 @media (max-width: 960px) {
     .home-navbar {
         height: auto;
-        min-height: 600px;
+        min-height: 560px;
     }
     
     .home-navbar .navbar-container .header-frame {
         flex-direction: column;
         margin-top: 60px;
-        height: auto;
+        min-height: auto;
         gap: 30px;
     }
     
     .home-navbar .navbar-container .header-frame .detail {
+        max-width: 100%;
         width: 100%;
         text-align: center;
     }
     
-    .home-navbar .navbar-container .header-frame .logo-frame {
+    .home-navbar .navbar-container .header-frame .banner-visual {
         width: 100%;
-        max-width: 500px;
-        height: 300px;
+        max-width: 100%;
+        min-height: 220px;
     }
 }
 

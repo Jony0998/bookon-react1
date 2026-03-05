@@ -7,14 +7,14 @@ import { useGlobals } from "../../hooks/useGlobals";
 import { serverApi } from "../../../lib/config";
 import { Logout, Login, PersonAdd, MenuBook } from "@mui/icons-material";
 
-interface HomeNavbarProps {
+export interface HomeNavbarProps {
     cartItems: CartItem[];
     onAdd: (item: CartItem) => void;
     onRemove: (item: CartItem) => void;
     onDelete: (item: CartItem) => void;
     onDeleteAll: () => void;
-    setSignupOpen: (isOpen: boolean) => void;
-    setLoginOpen: (isOpen: boolean) => void;
+    openSignup: () => void;
+    openLogin: () => void;
     handleLogoutClick: (e: React.MouseEvent<HTMLElement>) => void;
     anchorEl: HTMLElement | null;
     handleCloseLogout: () => void;
@@ -29,8 +29,8 @@ export default function HomeNavbar(props: HomeNavbarProps) {
          onRemove,
          onDelete,
          onDeleteAll,
-         setSignupOpen,
-         setLoginOpen,
+         openSignup,
+         openLogin,
          handleLogoutClick,
          anchorEl,
          handleCloseLogout,
@@ -90,7 +90,7 @@ export default function HomeNavbar(props: HomeNavbarProps) {
                 <Button 
                     className="login-button"
                     variant="contained"
-                    onClick={() => setLoginOpen(true)}
+                    onClick={openLogin}
                     startIcon={<Login />}
                 >
                     Login
@@ -170,7 +170,7 @@ export default function HomeNavbar(props: HomeNavbarProps) {
                         <Button 
                             variant={"contained"} 
                             className={"signup-button"} 
-                            onClick={() => setSignupOpen(true)}
+                            onClick={openSignup}
                             startIcon={<PersonAdd />}
                         >
                             SIGN UP
@@ -178,17 +178,17 @@ export default function HomeNavbar(props: HomeNavbarProps) {
                     ) : null}
                 </Box> 
                 </Stack>
-                <Box className={"logo-frame"}>
-                    <Box className="logo-content">
-                        <MenuBook 
-                            className={"logo-img"} 
-                            sx={{ fontSize: 80, color: '#667eea' }}
-                        />
-                        <Box className="logo-text-wrapper">
-                            <Box className="logo-main-text">BookOn</Box>
-                            <Box className="logo-sub-text">Online Book Store</Box>
-                        </Box>
-                    </Box>
+                <Box className={"banner-visual"}>
+                    <div className="book-pages">
+                        <span className="book-page book-page-1" />
+                        <span className="book-page book-page-2" />
+                        <span className="book-page book-page-3" />
+                        <span className="book-page book-page-4" />
+                        <span className="book-page book-page-5" />
+                    </div>
+                    <span className="banner-shape banner-shape-1" />
+                    <span className="banner-shape banner-shape-2" />
+                    <div className="banner-grid" />
                 </Box>
                </Stack>
         </Container>
