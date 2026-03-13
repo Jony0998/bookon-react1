@@ -1,5 +1,7 @@
 
-export const serverApi: string = `${process.env.REACT_APP_API_URL}`;
+export const serverApi: string =
+  process.env.REACT_APP_API_URL ||
+  (typeof window !== "undefined" ? window.location.origin : "");
 
 export const Messages = {
     error1: "Something went wrong!",
