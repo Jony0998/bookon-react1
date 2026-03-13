@@ -48,7 +48,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "start:prod": "serve -s build -l 3005",
+    "start:prod": "serve -s build -l tcp://0.0.0.0:3005",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
