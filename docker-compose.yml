@@ -1,0 +1,24 @@
+services:
+  bookon-frontend:
+    container_name: bookon-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        REACT_APP_API_URL: http://187.77.130.31:3003
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3005:3000"
+    networks:
+      - bookon-network
+
+networks:
+  bookon-network:
+    driver: bridge
+
+# ishga tushirish:
+# docker compose up -d --build
+# docker compose logs -f --tail=100
+# docker compose down

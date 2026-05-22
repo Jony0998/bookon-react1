@@ -1,10 +1,8 @@
 import React, { createContext } from "react";
 import { io, Socket } from "socket.io-client";
+import { serverApi } from "../../lib/config";
 
-const apiUrl =
-  process.env.REACT_APP_API_URL ||
-  (typeof window !== "undefined" ? window.location.origin : "");
-const socket = io(apiUrl, { withCredentials: true });
+const socket = io(serverApi, { withCredentials: true });
 export const SocketContext = createContext<Socket>(socket);
 
 interface SocketProviderProps {

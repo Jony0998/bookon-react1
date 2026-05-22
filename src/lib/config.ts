@@ -1,7 +1,24 @@
 
-export const serverApi: string =
-  process.env.REACT_APP_API_URL ||
-  (typeof window !== "undefined" ? window.location.origin : "");
+const resolveServerApi = (): string => {
+  const envApi = process.env.REACT_APP_API_URL;
+
+  if (typeof window === "undefined") {
+    return envApi || "";
+  }
+
+  const { protocol, hostname } = window.location;
+  const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
+
+  // Local browser access should hit local backend directly.
+  // This avoids NAT loopback/public IP timeout during local testing.
+  if (isLocalHost) {
+    return `${protocol}//${hostname}:3005`;
+  }
+
+  return envApi || window.location.origin;
+};
+
+export const serverApi: string = resolveServerApi();
 
 export const Messages = {
     error1: "Something went wrong!",
