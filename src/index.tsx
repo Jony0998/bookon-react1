@@ -11,6 +11,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import "./css/index.css";
 import ContextProvider from "./app/context/ContextProvider";
 import { SocketProvider } from "./app/context/SocketContext";
+import { ErrorBoundary } from "./app/ErrorBoundary";
 
 
 const container = document.getElementById("root")!;
@@ -27,7 +28,9 @@ root.render(
           <ThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
-          <App />
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
         </Router>
       </ThemeProvider>
       </SocketProvider>
