@@ -92,7 +92,9 @@ class MemberService {
      formData.append("memberPhone", input.memberPhone || "");
      formData.append("memberAddress", input.memberAddress || "");
      formData.append("memberDesc", input.memberDesc || "");
-     formData.append("memberImage", input.memberImage || "");
+     if (input.memberImage instanceof File) {
+       formData.append("memberImage", input.memberImage);
+     }
    
      const result = await axios(`${serverApi}/member/update`, {
        method: "POST",
