@@ -20,9 +20,9 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div style={{ padding: 24, fontFamily: "sans-serif", textAlign: "center" }}>
-          <h1>Xatolik yuz berdi</h1>
+          <h1>Something went wrong</h1>
           <p style={{ color: "#666" }}>{this.state.error?.message}</p>
-          <p><strong>F12 → Console</strong> da batafsil ko‘ring.</p>
+          <p>Please check <strong>F12 → Console</strong> for details.</p>
         </div>
       );
     }
