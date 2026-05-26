@@ -7,10 +7,6 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
-# Build-time API URL (can be overridden by docker-compose build args)
-ARG REACT_APP_API_URL=http://187.77.130.31:3003
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
-
 RUN yarn build
 
 FROM node:20-alpine AS runner

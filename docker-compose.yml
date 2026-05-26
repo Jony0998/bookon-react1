@@ -4,13 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-      args:
-        REACT_APP_API_URL: http://187.77.130.31:3003
     restart: unless-stopped
     environment:
       NODE_ENV: production
     ports:
-      - "3005:3000"
+      - "3000:3000"
     networks:
       - bookon-network
 
