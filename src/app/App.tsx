@@ -4,6 +4,7 @@ import  HomePage  from "./screens/homePage";
 import  ProductsPage  from "./screens/productsPage";
 import  OrdersPage  from "./screens/ordersPage";
 import  UsersPage  from "./screens/userPage";
+import OtherMemberPage from "./screens/otherMemberPage";
 import HomeNavbar from "./components/headers/HomeNavbar";
 import OtherNavbar from "./components/headers/OtherNavbar";
 import  Footer  from "./components/footer";
@@ -102,6 +103,9 @@ function App() {
       </Route>
       <Route path="/member-page">
         <UsersPage />
+      </Route>
+      <Route path="/other-member-page/:memberId">
+        <OtherMemberPage />
       </Route>
       <Route path="/help">
         <HelpPage />

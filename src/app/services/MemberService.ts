@@ -10,6 +10,17 @@ class MemberService {
         this.path = serverApi;
     }
     
+ public async getMemberById(memberId: string): Promise<Member> {
+   try {
+     const url = `${this.path}/member/${memberId}`;
+     const result = await axios.get(url);
+     return result.data;
+   } catch(err) {
+      console.log("Error, getMemberById:", err);
+      throw err;
+   }
+ }
+
  public async getTopUsers(): Promise<Member[]> {
    try {
      const url = this.path + "/member/top-users";

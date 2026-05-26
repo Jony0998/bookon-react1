@@ -397,7 +397,7 @@ export default function ActiveUsers() {
                       className="user-card"
                       variant="outlined"
                       sx={{ p: 0, position: 'relative', cursor: 'pointer' }}
-                      onClick={() => history.push("/member-page")}
+                      onClick={() => history.push(`/other-member-page/${member._id}`)}
                     >
                       <Box className="user-rank-badge">
                         <Star sx={{ fontSize: 18, color: '#1a1a2e' }} />

@@ -40,6 +40,16 @@ class ProductService {
      }
  }
 
+ public async checkLiked(productId: string): Promise<boolean> {
+   try {
+     const url = `${this.path}/product/like-check?productId=${productId}`;
+     const result = await axios.get(url, { withCredentials: true });
+     return result.data.liked;
+   } catch(err) {
+     return false;
+   }
+ }
+
  public async likeProduct(productId: string): Promise<Product> {
    try {
      const url = `${this.path}/product/like`;

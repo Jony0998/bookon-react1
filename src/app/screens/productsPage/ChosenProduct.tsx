@@ -12,7 +12,7 @@ import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import { FreeMode, Navigation, Thumbs } from "swiper";
 
-import { useDispatch, useSelector } from "react-redux"; 
+import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "@reduxjs/toolkit";
 import { setChosenProduct, setRestaurant } from "./slice";
 import { createSelector } from "reselect";
@@ -24,6 +24,8 @@ import MemberService from "../../services/MemberService";
 import { Member } from "../../../lib/types/member";
 import { serverApi } from "../../../lib/config";
 import { CartItem } from "../../../lib/types/search";
+import { useGlobals } from "../../hooks/useGlobals";
+import { sweetErrorHandling } from "../../../lib/sweetAlert";
 
 
 
@@ -54,31 +56,42 @@ export default function ChosenProduct(props: ChosenProductsProps) {
   const {setRestaurant, setChosenProduct} = actionDispatch(useDispatch());
   const { chosenProduct } = useSelector(chosenProductRetriever);
   const { restaurant } = useSelector(restaurantRetriever);
+  const { authMember } = useGlobals();
   const [liked, setLiked] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(0);
 
-
   useEffect(() => {
-    const product = new ProductService();
-    product
-    .getProduct(productId)
-    .then((data) => {
-      setChosenProduct(data);
-      setLikeCount(data.productLikes ?? 0);
-    })
-    .catch((err) => console.log(err));
+    const productSvc = new ProductService();
+    productSvc
+      .getProduct(productId)
+      .then((data) => {
+        setChosenProduct(data);
+        setLikeCount(data.productLikes ?? 0);
+      })
+      .catch((err) => console.log(err));
 
     const member = new MemberService();
     member
-    .getLibrary()
-    .then((data) => setRestaurant(data))
-    .catch((err) => console.log(err));
-  }, [productId, setChosenProduct, setRestaurant]);
+      .getLibrary()
+      .then((data) => setRestaurant(data))
+      .catch((err) => console.log(err));
+
+    if (authMember) {
+      productSvc
+        .checkLiked(productId)
+        .then((isLiked) => setLiked(isLiked))
+        .catch(() => {});
+    }
+  }, [productId]);
 
   const handleLike = async () => {
     try {
-      const product = new ProductService();
-      const updated = await product.likeProduct(productId as string);
+      if (!authMember) {
+        sweetErrorHandling(new Error("Please login to like books!")).then();
+        return;
+      }
+      const productSvc = new ProductService();
+      const updated = await productSvc.likeProduct(productId as string);
       setLikeCount(updated.productLikes);
       setLiked(!liked);
     } catch (err) {
