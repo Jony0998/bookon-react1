@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Stack, Box, Typography } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import { MenuBook, Star, ShoppingCart } from "@mui/icons-material";
+import { MenuBook, Star, ShoppingCart, Favorite, FavoriteBorder } from "@mui/icons-material";
 import Divider from "../../components/divider";
 import Button from "@mui/material/Button";
 import Rating from "@mui/material/Rating";
@@ -54,13 +54,18 @@ export default function ChosenProduct(props: ChosenProductsProps) {
   const {setRestaurant, setChosenProduct} = actionDispatch(useDispatch());
   const { chosenProduct } = useSelector(chosenProductRetriever);
   const { restaurant } = useSelector(restaurantRetriever);
+  const [liked, setLiked] = useState<boolean>(false);
+  const [likeCount, setLikeCount] = useState<number>(0);
 
 
   useEffect(() => {
     const product = new ProductService();
     product
     .getProduct(productId)
-    .then((data) => setChosenProduct(data))
+    .then((data) => {
+      setChosenProduct(data);
+      setLikeCount(data.productLikes ?? 0);
+    })
     .catch((err) => console.log(err));
 
     const member = new MemberService();
@@ -69,6 +74,17 @@ export default function ChosenProduct(props: ChosenProductsProps) {
     .then((data) => setRestaurant(data))
     .catch((err) => console.log(err));
   }, [productId, setChosenProduct, setRestaurant]);
+
+  const handleLike = async () => {
+    try {
+      const product = new ProductService();
+      const updated = await product.likeProduct(productId as string);
+      setLikeCount(updated.productLikes);
+      setLiked(!liked);
+    } catch (err) {
+      console.log("Like error:", err);
+    }
+  };
 
   if (!chosenProduct) return null;
 
@@ -123,6 +139,12 @@ export default function ChosenProduct(props: ChosenProductsProps) {
                 <div className={"product-view"}>
                   <RemoveRedEyeIcon sx={{ mr: "10px", color: '#667eea' }} />
                   <span>{chosenProduct?.productViews} views</span>
+                </div>
+                <div className={"product-view"} style={{ cursor: "pointer" }} onClick={handleLike}>
+                  {liked
+                    ? <Favorite sx={{ mr: "8px", color: "#e53935" }} />
+                    : <FavoriteBorder sx={{ mr: "8px", color: "#667eea" }} />}
+                  <span>{likeCount} likes</span>
                 </div>
               </div>
             </Box>

@@ -32,16 +32,25 @@ class ProductService {
      try {
        const url = `${this.path}/product/${productId}`;
        const result = await axios.get(url, {withCredentials: true });
-
        console.log("getProduct:", result);
-
        return result.data;
      } catch(err) {
         console.log("Error, getProduct:", err);
         throw err;
      }
  }
- 
+
+ public async likeProduct(productId: string): Promise<Product> {
+   try {
+     const url = `${this.path}/product/like`;
+     const result = await axios.post(url, { productId }, { withCredentials: true });
+     return result.data;
+   } catch(err) {
+     console.log("Error, likeProduct:", err);
+     throw err;
+   }
+ }
+
 };
 
 

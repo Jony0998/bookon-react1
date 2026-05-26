@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Container, Stack } from "@mui/material";
+import { useHistory } from "react-router-dom";
 import { CssVarsProvider } from "@mui/joy";
 import Card from "@mui/joy/Card";
 import AspectRatio from "@mui/joy/AspectRatio";
@@ -364,9 +365,8 @@ const ActiveUsersWrapper = styled.div`
 
 export default function ActiveUsers() {
   const {topUsers} = useSelector(topUsersRetriever);
+  const history = useHistory();
   const safeTopUsers = Array.isArray(topUsers) ? topUsers : [];
-  
-  // Show only first 4 readers
   const displayedUsers = safeTopUsers.slice(0, 4);
 
   return (
@@ -392,11 +392,12 @@ export default function ActiveUsers() {
                   displayedUsers.map((member: Member, index: number) => {
                     const imagePath = `${serverApi}/${member.memberImage}`;
                     return (
-                    <Card 
+                    <Card
                       key={member._id}
                       className="user-card"
-                      variant="outlined" 
-                      sx={{ p: 0, position: 'relative' }}
+                      variant="outlined"
+                      sx={{ p: 0, position: 'relative', cursor: 'pointer' }}
+                      onClick={() => history.push("/member-page")}
                     >
                       <Box className="user-rank-badge">
                         <Star sx={{ fontSize: 18, color: '#1a1a2e' }} />
