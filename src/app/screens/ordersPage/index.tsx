@@ -128,7 +128,7 @@ const handleChange = (e: SyntheticEvent, newValue: string) => {
             <div className="order-user-icon-box">
               <img
                 src={
-                  authMember?.memberType === MemberType.RESTAURANT 
+                  authMember?.memberType === MemberType.LIBRARY
                         ? "/icons/restaurant.svg"
                         : "/icons/user-badge.svg"}
              
@@ -140,7 +140,7 @@ const handleChange = (e: SyntheticEvent, newValue: string) => {
         
           <span className="order-user-name">{authMember?.memberNick}</span>
           <span className="order-user-prof">
-            {authMember?.memberType === "RESTAURANT" ? "Publisher" : "Reader"}
+            {authMember?.memberType === MemberType.LIBRARY ? "Library" : "Reader"}
           </span>
         </Box>
         <Box className="liner"></Box>
@@ -148,8 +148,8 @@ const handleChange = (e: SyntheticEvent, newValue: string) => {
         <Box className="order-user-address">
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <LocationOnIcon sx={{ mr: 1 }} />
-            <span>{authMember?.memberAddreas 
-                  ? authMember.memberAddreas 
+            <span>{authMember?.memberAddress 
+                  ? authMember.memberAddress 
                   : 
                   "Do not exist"}</span>
           </Box>

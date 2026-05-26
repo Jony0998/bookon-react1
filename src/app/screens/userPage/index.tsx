@@ -47,7 +47,7 @@ export default function UserPage() {
                   />
                   <div className={"order-user-icon-box"}>
                     <img src={
-                      authMember?.memberType === MemberType.RESTAURANT 
+                      authMember?.memberType === MemberType.LIBRARY
                     ? "/icons/restaurant.svg"
                     : "/icons/user-badge.svg"
                     }
@@ -58,8 +58,8 @@ export default function UserPage() {
                 <span className={"order-user-name"}>{authMember?.memberNick}</span>
                 <span className={"order-user-prof"}>{authMember?.memberType}</span>
                 <span className={"order-user-prof"}>
-                  {authMember?.memberAddreas 
-                  ? authMember.memberAddreas 
+                  {authMember?.memberAddress 
+                  ? authMember.memberAddress 
                   : 
                   "no address"}</span>
               </Box>
