@@ -55,9 +55,8 @@ export default function OtherMemberPage() {
                   </div>
                 </div>
                 <span className={"order-user-name"}>{member.memberNick}</span>
-                <span className={"order-user-prof"}>{member.memberType}</span>
                 <span className={"order-user-prof"}>
-                  {member.memberAddress ? member.memberAddress : "no address"}
+                  {member.memberType === MemberType.LIBRARY ? "Library" : "Reader"}
                 </span>
               </Box>
               <Box className={"user-media-box"}>

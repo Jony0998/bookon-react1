@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Container, Stack, Box, Typography } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import { MenuBook, Star, ShoppingCart, Favorite, FavoriteBorder } from "@mui/icons-material";
+import { MenuBook, ShoppingCart, Favorite, FavoriteBorder } from "@mui/icons-material";
 import Divider from "../../components/divider";
 import Button from "@mui/material/Button";
-import Rating from "@mui/material/Rating";
+import { formatEnumLabel } from "../../../lib/enums/product.enum";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
@@ -139,14 +139,21 @@ export default function ChosenProduct(props: ChosenProductsProps) {
             </Box>
             <Box className={"publisher-info"}>
               <span className={"resto-name"}>Publisher: {restaurant?.memberNick || "BookOn"}</span>
-              <span className={"resto-name"}>Contact: {restaurant?.memberPhone || "+998 90 123 45 67"}</span>
+              {restaurant?.memberPhone && (
+                <span className={"resto-name"}>Contact: {restaurant.memberPhone}</span>
+              )}
             </Box>
 
             <Box className={"rating-box"}>
               <Box className={"rating-wrapper"}>
-                <Rating name="half-rating" defaultValue={4.8} precision={0.1} readOnly />
-                <Typography sx={{ ml: 1, fontWeight: 600, color: '#667eea' }}>4.8</Typography>
-                <Typography sx={{ ml: 1, color: '#888' }}>({Math.floor(Math.random() * 100) + 50} reviews)</Typography>
+                <Typography sx={{ fontWeight: 600, color: '#667eea' }}>
+                  {formatEnumLabel(chosenProduct.productCollection)}
+                </Typography>
+                <Typography sx={{ ml: 1, color: '#888' }}>
+                  {chosenProduct.productLeftCount > 0
+                    ? `${chosenProduct.productLeftCount} in stock`
+                    : "Out of stock"}
+                </Typography>
               </Box>
               <div className={"evaluation-box"}>
                 <div className={"product-view"}>
