@@ -9,7 +9,6 @@ import ProcessOrders from "./ProcessOrders";
 import FinishedOrders from "./FinishedOrders";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import TextField from "@mui/material/TextField";
 import { useDispatch } from "react-redux"; 
 import { Dispatch } from "@reduxjs/toolkit";
 import { setPausedOrders, setProcessOrders, setFinishedOrders } from "./slice";
@@ -43,7 +42,13 @@ export default function OrdersPage() {
     orderStatus: OrderStatus.PAUSE,
   });
 
+  // Redirect guests away (inside an effect, not during render)
   useEffect(() => {
+    if (!authMember) history.push("/");
+  }, [authMember, history]);
+
+  useEffect(() => {
+    if (!authMember) return;
     const order = new OrderService();
 
    order
@@ -61,7 +66,7 @@ export default function OrdersPage() {
    .then((data) => setFinishedOrders(data))
    .catch((err) => console.log(err));
 
-  }, [orderInquiry, orderBuilder, setPausedOrders, setProcessOrders, setFinishedOrders]);
+  }, [authMember, orderInquiry, orderBuilder, setPausedOrders, setProcessOrders, setFinishedOrders]);
 
 
   /** HANDLERS **/
@@ -70,7 +75,7 @@ const handleChange = (e: SyntheticEvent, newValue: string) => {
   setValue(newValue);
 };
 
- if(!authMember) history.push("/");
+ if (!authMember) return null;
 
   return (
     <div className={"order-page"}>
@@ -161,72 +166,12 @@ const handleChange = (e: SyntheticEvent, newValue: string) => {
           <CreditCard sx={{ fontSize: 24, mr: 1, color: '#667eea' }} />
           <Box sx={{ fontSize: '18px', fontWeight: 700, color: '#1a1a2e' }}>Payment Information</Box>
         </Box>
-        <Stack spacing={2} sx={{ width: "100%" }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Card Number"
-            value="5243 4090 2002 7495"
-            InputProps={{ readOnly: true }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '12px',
-                '& fieldset': {
-                  borderColor: 'rgba(102, 126, 234, 0.2)',
-                },
-              },
-            }}
-          />
-
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="Expiry Date"
-              value="07 / 24"
-              InputProps={{ readOnly: true }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '12px',
-                  '& fieldset': {
-                    borderColor: 'rgba(102, 126, 234, 0.2)',
-                  },
-                },
-              }}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="CVV"
-              value="010"
-              InputProps={{ readOnly: true }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '12px',
-                  '& fieldset': {
-                    borderColor: 'rgba(102, 126, 234, 0.2)',
-                  },
-                },
-              }}
-            />
-          </Box>
-
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Cardholder Name"
-            value={authMember?.memberNick || "Cardholder Name"}
-            InputProps={{ readOnly: true }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '12px',
-                '& fieldset': {
-                  borderColor: 'rgba(102, 126, 234, 0.2)',
-                },
-              },
-            }}
-          />
-        </Stack>
+        {/* No card data is collected or shown on the site */}
+        <Box sx={{ width: "100%", color: "#555", fontSize: "15px", lineHeight: 1.6 }}>
+          Payment is made when your order is delivered. Press
+          <b> Proceed to Payment</b> on a pending order to confirm it, and our
+          library will contact you to arrange delivery.
+        </Box>
 
         <Box
           sx={{

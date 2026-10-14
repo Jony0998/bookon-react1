@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Box, Container, Stack } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -14,7 +15,12 @@ export default function UserPage() {
   const history = useHistory();
   const {authMember} = useGlobals();
 
-  if(!authMember) history.push("/");
+  // Redirect guests away (inside an effect, not during render)
+  useEffect(() => {
+    if (!authMember) history.push("/");
+  }, [authMember, history]);
+
+  if (!authMember) return null;
 
   return (
     <div className={"user-page"}>
