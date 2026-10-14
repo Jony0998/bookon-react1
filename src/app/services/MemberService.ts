@@ -99,8 +99,9 @@ class MemberService {
      const formData = new FormData();
      formData.append("memberNick", input.memberNick || "");
      formData.append("memberPhone", input.memberPhone || "");
-     formData.append("memberAddress", input.memberAddress || "");
-     formData.append("memberDesc", input.memberDesc || "");
+     // Only send optional fields when present so they are not wiped
+     if (input.memberAddress !== undefined) formData.append("memberAddress", input.memberAddress);
+     if (input.memberDesc !== undefined) formData.append("memberDesc", input.memberDesc);
      if (input.memberImage instanceof File) {
        formData.append("memberImage", input.memberImage);
      }

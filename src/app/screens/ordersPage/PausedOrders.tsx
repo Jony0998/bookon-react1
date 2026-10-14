@@ -14,6 +14,7 @@ import { sweetErrorHandling } from "../../../lib/sweetAlert";
 import { OrderStatus } from "../../../lib/enums/order.enum";
 import { useGlobals } from "../../hooks/useGlobals";
 import OrderService from "../../services/OrderService";
+import { findOrderProduct } from "../../../lib/orderProduct";
 
  
 /** REDUX SLICE & SELECTOR */
@@ -91,18 +92,15 @@ export default function PausedOrders(props: PausedOrderProps) {
             <Box key={order._id} className="order-main-box">
               <Box className="order-box-scroll">
                 {order?.orderItems?.map((item: OrderItem) => {
-                  const product: Product = order.productData.filter(
-                    (ele: Product) => item.productId === ele._id
-                    )[0];
-                  const imagePath = `${serverApi}/${product.productImages[0]}`;  
+                  const { productName, imagePath } = findOrderProduct(order, item);
                   return (
                     <Box key={item._id} className="orders-name-price">
                       <img
                         src={imagePath}
                         className="order-dish-img"
-                        alt={product.productName}
+                        alt={productName}
                       />
-                      <p className="title-dish">{product.productName}</p>
+                      <p className="title-dish">{productName}</p>
                       <Box className="price-box">
                         <p>${item.itemPrice}</p>
                         <img src="/icons/close.svg" alt="Close" />

@@ -53,12 +53,8 @@ export function Settings() {
   const handleSubmitButton = async () => {
     try {
       if(!authMember) throw new Error(Messages.error2);
-      if (
-        memberUpdateInput.memberNick === "" || 
-        memberUpdateInput.memberPhone === "" ||
-        memberUpdateInput.memberAddress === "" ||
-        memberUpdateInput.memberDesc === ""
-      ) {
+      // Nick and phone are required; address and description are optional
+      if (!memberUpdateInput.memberNick?.trim() || !memberUpdateInput.memberPhone?.trim()) {
         throw new Error(Messages.error3);
       }
       const member = new MemberService();
@@ -74,19 +70,18 @@ export function Settings() {
   };
 
   const handleImageViewer = (e: T) => {
-    const file = e.target.files[0];
-    console.log("file:", file);
-    const fileType = file.type,
-    validateImageTypes = ["image/jpg", "image/jpeg", "image/png"];
+    const file = e.target.files?.[0];
+    if (!file) return; // user cancelled the file dialog
+    const validateImageTypes = ["image/jpg", "image/jpeg", "image/png", "image/webp"];
 
-    if (!validateImageTypes.includes(fileType)) {
+    if (!validateImageTypes.includes(file.type)) {
       sweetErrorHandling(Messages.error5).then();
+    } else if (file.size > 5 * 1024 * 1024) {
+      sweetErrorHandling(Messages.error11).then();
     } else {
-      if(file) {
-        memberUpdateInput.memberImage = file;
-        setMemberUpdateInput({...memberUpdateInput});
-        setMemberImage(URL.createObjectURL(file));
-      }
+      memberUpdateInput.memberImage = file;
+      setMemberUpdateInput({...memberUpdateInput});
+      setMemberImage(URL.createObjectURL(file));
     }
 
   };
@@ -98,7 +93,7 @@ export function Settings() {
         <img src={memberImage} className={"mb-image"} alt="Member avatar" />
         <div className={"media-change-box"}>
           <span>Upload image</span>
-          <p>JPG, JPEG, PNG formats only!</p>
+          <p>JPG, JPEG, PNG, WEBP formats only (max 5MB)!</p>
           <div className={"up-del-box"}>
             <Button component="label"
              onChange={handleImageViewer}
