@@ -85,14 +85,12 @@ class MemberService {
  public async logout(): Promise<void> {
   try {
     const url = this.path + "/member/logout";
-   const result = await axios.post(url, {}, {withCredentials: true});
-   console.log("logout:", result);
-
-   localStorage.removeItem("memberData");
-
-  }  catch(err) {
-      console.log("Error, logout:", err);
-      throw err;
+    await axios.post(url, {}, {withCredentials: true});
+  } catch(err) {
+    // Server-side failure must not keep the user stuck as logged in
+    console.log("Error, logout:", err);
+  } finally {
+    localStorage.removeItem("memberData");
   }
  }
 
