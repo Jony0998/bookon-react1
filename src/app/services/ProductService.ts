@@ -13,14 +13,16 @@ class ProductService {
  public async getProducts(input: ProductInquiry): Promise<Product[]> {
    try {
  
-     let url = `${this.path}/product/all?order=${input.order}&page=${input.page}&limit=${input.limit}`;
-     if (input.productCollection)
-        url += `&productCollection=${input.productCollection}`;
-    if (input.search) url += `&search=${input.search}`;
+     const params: Record<string, string | number> = {
+       order: input.order,
+       page: input.page,
+       limit: input.limit,
+     };
+     if (input.productCollection) params.productCollection = input.productCollection;
+     if (input.search) params.search = input.search;
 
-    const result = await axios.get(url);
-    console.log("getProducts:", result);
- 
+     // axios encodes params, so "&", "#" or "+" in a search term are safe
+     const result = await axios.get(`${this.path}/product/all`, { params });
      return result.data;
    } catch(err) {
       console.log("Error, getProduct:", err)
@@ -32,7 +34,6 @@ class ProductService {
      try {
        const url = `${this.path}/product/${productId}`;
        const result = await axios.get(url, {withCredentials: true });
-       console.log("getProduct:", result);
        return result.data;
      } catch(err) {
         console.log("Error, getProduct:", err);
@@ -42,8 +43,8 @@ class ProductService {
 
  public async checkLiked(productId: string): Promise<boolean> {
    try {
-     const url = `${this.path}/product/like-check?productId=${productId}`;
-     const result = await axios.get(url, { withCredentials: true });
+     const url = `${this.path}/product/like-check`;
+     const result = await axios.get(url, { params: { productId }, withCredentials: true });
      return result.data.liked;
    } catch(err) {
      return false;
