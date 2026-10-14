@@ -10,7 +10,7 @@ import { createSelector } from "reselect";
 import { retrieveNewDishes } from "./selector";
 import { Product } from "../../../lib/types/product";
 import { serverApi } from "../../../lib/config";
-import { ProductCollection } from "../../../lib/enums/product.enum";
+import { formatEnumLabel } from "../../../lib/enums/product.enum";
 import { useHistory } from "react-router-dom";
 
  
@@ -43,9 +43,7 @@ export default function NewDishes() {
                 {safeNewDishes.length !== 0 ? (
                   safeNewDishes.map((product: Product, index: number) => {
                 const imagePath = `${serverApi}/${product.productImages[0]}`;      
-                const sizeVolume = 
-                product.productCollection === ProductCollection.DRINK
-                 ? product.productVolume + "l" : product.productSize + " size";    
+                const sizeVolume = formatEnumLabel(product.productCollection);
                     return (
                     <Card 
                       key={product._id} 

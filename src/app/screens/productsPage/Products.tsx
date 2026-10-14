@@ -14,7 +14,7 @@ import { createSelector } from "reselect";
 import { retrieveProducts } from "./selector";
 import { Product, ProductInquiry } from "../../../lib/types/product";
 import ProductService from "../../services/ProductService";
-import { ProductCollection } from "../../../lib/enums/product.enum";
+import { ProductCollection, formatEnumLabel } from "../../../lib/enums/product.enum";
 import { serverApi } from "../../../lib/config";
 import { useHistory } from "react-router-dom";
 import { CartItem } from "../../../lib/types/search";
@@ -236,12 +236,12 @@ export default function Products(props: ProductsProps) {
                      }}
                  variant={"contained"}
                  color={
-                    productSearch.productCollection === ProductCollection.DISH 
+                    productSearch.productCollection === ProductCollection.FICTION 
                     ? "primary"
                     : "secondary"
                  }
                  className={"order"}
-                 onClick={() => searchCollectionHandler(ProductCollection.DISH)}
+                 onClick={() => searchCollectionHandler(ProductCollection.FICTION)}
                  
                  >
                   FICTION
@@ -253,12 +253,12 @@ export default function Products(props: ProductsProps) {
                      }}
                  variant={"contained"}
                   color={
-                    productSearch.productCollection === ProductCollection.SALAD 
+                    productSearch.productCollection === ProductCollection.NON_FICTION 
                     ? "primary"
                     : "secondary"
                  }
                  className={"order"}
-                 onClick={() => searchCollectionHandler(ProductCollection.SALAD)}
+                 onClick={() => searchCollectionHandler(ProductCollection.NON_FICTION)}
                  >
                   NON-FICTION
                  </Button>
@@ -269,12 +269,12 @@ export default function Products(props: ProductsProps) {
                      }}
                  variant={"contained"}
                   color={
-                    productSearch.productCollection === ProductCollection.DRINK 
+                    productSearch.productCollection === ProductCollection.TEXTBOOK 
                     ? "primary"
                     : "secondary"
                  }
                  className={"order"}
-                 onClick={() => searchCollectionHandler(ProductCollection.DRINK)}
+                 onClick={() => searchCollectionHandler(ProductCollection.TEXTBOOK)}
                  >
                   EDUCATION
                  </Button>
@@ -285,12 +285,12 @@ export default function Products(props: ProductsProps) {
                      }}
                  variant={"contained"}
                   color={
-                    productSearch.productCollection === ProductCollection.DESSERT
+                    productSearch.productCollection === ProductCollection.CHILDREN
                     ? "primary"
                     : "secondary"
                  }
                  className={"order"}
-                 onClick={() => searchCollectionHandler(ProductCollection.DESSERT)}
+                 onClick={() => searchCollectionHandler(ProductCollection.CHILDREN)}
                  >
                   CHILDREN
                  </Button>
@@ -318,9 +318,7 @@ export default function Products(props: ProductsProps) {
                         const imagePath = product.productImages && product.productImages.length > 0
                           ? `${serverApi}/${product.productImages[0]}`
                           : "/icons/books-icon.png";
-                        const sizeVolume = product.productCollection === ProductCollection.DRINK 
-                        ? product.productVolume + " pages" 
-                        : product.productSize + " pages";
+                        const sizeVolume = formatEnumLabel(product.productCollection);
                         return (
                      <Stack key={product._id} className={"product-card"}
                       onClick={() => chooseDishHandler(product._id)}
@@ -426,28 +424,28 @@ export default function Products(props: ProductsProps) {
             Book Categories
           </Box>
           <Stack className={"brands-boxes"}>
-            <Box className={"brands-box"} onClick={() => searchCollectionHandler(ProductCollection.DISH)}>
+            <Box className={"brands-box"} onClick={() => searchCollectionHandler(ProductCollection.FICTION)}>
               <div className="category-bg category-1">
                 <AutoStories sx={{ fontSize: 70, color: '#fff', mb: 2 }} />
                 <Box sx={{ color: '#fff', fontSize: '22px', fontWeight: 700, textAlign: 'center' }}>Fiction</Box>
                 <Box sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 400, mt: 1, textAlign: 'center' }}>Novels & Stories</Box>
               </div>
             </Box>
-            <Box className={"brands-box"} onClick={() => searchCollectionHandler(ProductCollection.SALAD)}>
+            <Box className={"brands-box"} onClick={() => searchCollectionHandler(ProductCollection.NON_FICTION)}>
               <div className="category-bg category-2">
                 <LocalLibrary sx={{ fontSize: 70, color: '#fff', mb: 2 }} />
                 <Box sx={{ color: '#fff', fontSize: '22px', fontWeight: 700, textAlign: 'center' }}>Non-Fiction</Box>
                 <Box sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 400, mt: 1, textAlign: 'center' }}>Biography & History</Box>
               </div>
             </Box>
-            <Box className={"brands-box"} onClick={() => searchCollectionHandler(ProductCollection.DRINK)}>
+            <Box className={"brands-box"} onClick={() => searchCollectionHandler(ProductCollection.TEXTBOOK)}>
               <div className="category-bg category-3">
                 <School sx={{ fontSize: 70, color: '#fff', mb: 2 }} />
                 <Box sx={{ color: '#fff', fontSize: '22px', fontWeight: 700, textAlign: 'center' }}>Education</Box>
                 <Box sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 400, mt: 1, textAlign: 'center' }}>Textbooks & Guides</Box>
               </div>
             </Box>
-            <Box className={"brands-box"} onClick={() => searchCollectionHandler(ProductCollection.DESSERT)}>
+            <Box className={"brands-box"} onClick={() => searchCollectionHandler(ProductCollection.CHILDREN)}>
               <div className="category-bg category-4">
                 <MenuBook sx={{ fontSize: 70, color: '#fff', mb: 2 }} />
                 <Box sx={{ color: '#fff', fontSize: '22px', fontWeight: 700, textAlign: 'center' }}>Children</Box>
