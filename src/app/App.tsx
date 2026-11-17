@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import { Route, Switch, useLocation } from "react-router-dom";
+import React, { Suspense, lazy, useState } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import  HomePage  from "./screens/homePage";
-import  ProductsPage  from "./screens/productsPage";
-import  OrdersPage  from "./screens/ordersPage";
-import  UsersPage  from "./screens/userPage";
-import OtherMemberPage from "./screens/otherMemberPage";
 import HomeNavbar from "./components/headers/HomeNavbar";
 import OtherNavbar from "./components/headers/OtherNavbar";
 import  Footer  from "./components/footer";
-import  HelpPage  from "./screens/helpPage";
+
+// The landing page ships in the main bundle; other pages load on first visit
+const ProductsPage = lazy(() => import("./screens/productsPage"));
+const OrdersPage = lazy(() => import("./screens/ordersPage"));
+const UsersPage = lazy(() => import("./screens/userPage"));
+const OtherMemberPage = lazy(() => import("./screens/otherMemberPage"));
+const HelpPage = lazy(() => import("./screens/helpPage"));
 import useBasket from "./hooks/useBasket";
 import AuthenticationModal from "./components/auth";
 import { sweetErrorHandling, sweetTopSuccessAlert } from "../lib/sweetAlert";
@@ -94,27 +96,17 @@ function App() {
         />
     )}
 
-    <Switch>
-      <Route path="/products">
-        <ProductsPage onAdd={onAdd} />
-      </Route>
-      <Route path="/orders">
-        <OrdersPage />
-      </Route>
-      <Route path="/member-page">
-        <UsersPage />
-      </Route>
-      <Route path="/other-member-page/:memberId">
-        <OtherMemberPage />
-      </Route>
-      <Route path="/help">
-        <HelpPage />
-      </Route>
-      <Route path="/">
-        {/* <Test /> */}
-        <HomePage />
-      </Route>
-    </Switch>
+    <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
+    <Routes>
+      <Route path="/products/*" element={<ProductsPage onAdd={onAdd} />} />
+      <Route path="/orders/*" element={<OrdersPage />} />
+      <Route path="/member-page/*" element={<UsersPage />} />
+      <Route path="/other-member-page/:memberId" element={<OtherMemberPage />} />
+      <Route path="/help/*" element={<HelpPage />} />
+      {/* v5 fell back to the home page for unknown paths; keep that behaviour */}
+      <Route path="*" element={<HomePage />} />
+    </Routes>
+    </Suspense>
 
     <Footer />
 

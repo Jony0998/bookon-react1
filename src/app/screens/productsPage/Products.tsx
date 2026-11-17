@@ -16,7 +16,7 @@ import { Product, ProductInquiry } from "../../../lib/types/product";
 import ProductService from "../../services/ProductService";
 import { ProductCollection, formatEnumLabel } from "../../../lib/enums/product.enum";
 import { serverApi } from "../../../lib/config";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CartItem } from "../../../lib/types/search";
 
 
@@ -52,7 +52,7 @@ export default function Products(props: ProductsProps) {
 
     const [ searchText, setSearchText ] = useState<string>("");
     const [ totalPages, setTotalPages ] = useState<number>(1);
-    const history = useHistory();
+    const navigate = useNavigate();
 
   useEffect(() => {
     const product = new ProductService();
@@ -125,7 +125,7 @@ export default function Products(props: ProductsProps) {
  };
 
  const chooseDishHandler = (id: string) => {
-   history.push(`/products/${id}`);
+   navigate(`/products/${id}`);
  };
 
 

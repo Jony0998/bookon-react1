@@ -1,13 +1,13 @@
 import React from "react";
 import { Box, Container, Stack, Typography, Button } from "@mui/material";
 import { MenuBook, ArrowForward } from "@mui/icons-material";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Advertisement() {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const handleExploreClick = () => {
-        history.push("/products");
+        navigate("/products");
     };
 
     return (

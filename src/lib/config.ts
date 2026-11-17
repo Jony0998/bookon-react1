@@ -5,7 +5,7 @@
  * 3. production -> same origin (nginx proxies /member, /product, /order, /uploads)
  */
 const resolveServerApi = (): string => {
-  const envApi = process.env.REACT_APP_API_URL?.replace(/\/+$/, "");
+  const envApi = import.meta.env.REACT_APP_API_URL?.replace(/\/+$/, "");
   if (envApi) return envApi;
 
   if (typeof window === "undefined") return "";

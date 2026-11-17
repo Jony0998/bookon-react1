@@ -4,7 +4,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import MemberService from "../../services/MemberService";
 import { Member } from "../../../lib/types/member";
 import { serverApi } from "../../../lib/config";
@@ -12,16 +12,16 @@ import { MemberType } from "../../../lib/enums/member.enum";
 import "../../../css/userPage.css";
 
 export default function OtherMemberPage() {
-  const { memberId } = useParams<{ memberId: string }>();
+  const { memberId = "" } = useParams<{ memberId: string }>();
   const [member, setMember] = useState<Member | null>(null);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const service = new MemberService();
     service
       .getMemberById(memberId)
       .then((data) => setMember(data))
-      .catch(() => history.push("/"));
+      .catch(() => navigate("/"));
   }, [memberId]);
 
   if (!member) return null;

@@ -1,7 +1,5 @@
-
 import React from "react";
-import { Container } from "@mui/material";
-import {  Route, Switch, useRouteMatch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import ChosenProduct from "./ChosenProduct";
 import Products from "./Products";
 import "../../../css/products.css";
@@ -11,21 +9,15 @@ interface ProductsPageProps {
   onAdd: (item: CartItem) => void;
 }
 
-export default function ProductsPage(props:ProductsPageProps) {
+/** Mounted at /products/* (see App.tsx) */
+export default function ProductsPage(props: ProductsPageProps) {
   const { onAdd } = props;
-  const products = useRouteMatch();
-  return <div className={"products-page"}>
-    <Switch>
-      <Route path={`${products.path}/:productId`}>
-      <ChosenProduct onAdd={onAdd}/>
-      </Route>
-      <Route path={`${products.path}`}>
-        <Products onAdd={onAdd}/>
-      </Route>
-    </Switch>
-  </div>
-
-  
+  return (
+    <div className={"products-page"}>
+      <Routes>
+        <Route path=":productId" element={<ChosenProduct onAdd={onAdd} />} />
+        <Route index element={<Products onAdd={onAdd} />} />
+      </Routes>
+    </div>
+  );
 }
-
-

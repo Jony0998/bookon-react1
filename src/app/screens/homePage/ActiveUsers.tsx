@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Container, Stack } from "@mui/material";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CssVarsProvider } from "@mui/joy";
 import Card from "@mui/joy/Card";
 import AspectRatio from "@mui/joy/AspectRatio";
@@ -365,7 +365,7 @@ const ActiveUsersWrapper = styled.div`
 
 export default function ActiveUsers() {
   const {topUsers} = useSelector(topUsersRetriever);
-  const history = useHistory();
+  const navigate = useNavigate();
   const safeTopUsers = Array.isArray(topUsers) ? topUsers : [];
   const displayedUsers = safeTopUsers.slice(0, 4);
 
@@ -397,7 +397,7 @@ export default function ActiveUsers() {
                       className="user-card"
                       variant="outlined"
                       sx={{ p: 0, position: 'relative', cursor: 'pointer' }}
-                      onClick={() => history.push(`/other-member-page/${member._id}`)}
+                      onClick={() => navigate(`/other-member-page/${member._id}`)}
                     >
                       <Box className="user-rank-badge">
                         <Star sx={{ fontSize: 18, color: '#1a1a2e' }} />

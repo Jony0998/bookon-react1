@@ -10,7 +10,7 @@ import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
-import { FreeMode, Navigation, Thumbs } from "swiper";
+import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "@reduxjs/toolkit";
@@ -52,7 +52,7 @@ import { sweetErrorHandling } from "../../../lib/sweetAlert";
 
 export default function ChosenProduct(props: ChosenProductsProps) {
   const { onAdd } = props;
-  const {productId} = useParams<{ productId: string }>();
+  const { productId = "" } = useParams<{ productId: string }>();
   const {setRestaurant, setChosenProduct} = actionDispatch(useDispatch());
   const { chosenProduct } = useSelector(chosenProductRetriever);
   const { restaurant } = useSelector(restaurantRetriever);

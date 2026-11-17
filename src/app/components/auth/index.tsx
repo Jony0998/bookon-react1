@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
-import { Box, Button, Stack, TextField, Typography, IconButton, InputAdornment } from "@mui/material";
+import { Backdrop, Fade, Modal, Box, Button, Stack, TextField, Typography, IconButton, InputAdornment } from "@mui/material";
 import styled from "styled-components";
 import { 
   Login as LoginIcon, 
@@ -21,20 +17,14 @@ import MemberService from "../../services/MemberService";
 import { sweetErrorHandling } from "../../../lib/sweetAlert";
 import { useGlobals } from "../../hooks/useGlobals";
 
-const useStyles = makeStyles((theme) => ({
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    '& .MuiBackdrop-root': {
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      backdropFilter: 'blur(5px)',
-    },
+/** Centered modal with a blurred, dimmed backdrop */
+const modalSx = { display: "flex", alignItems: "center", justifyContent: "center" } as const;
+const modalSlotProps = {
+  backdrop: {
+    timeout: 500,
+    sx: { backgroundColor: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(5px)" },
   },
-  paper: {
-    outline: "none",
-  },
-}));
+};
 
 const AuthModalWrapper = styled(Box)`
   position: relative;
@@ -246,7 +236,6 @@ interface AuthenticationModalProps {
 
 export default function AuthenticationModal(props: AuthenticationModalProps) {
   const { signupOpen, loginOpen, handleSignupClose, handleLoginClose } = props;
-  const classes = useStyles();
   const [memberNick, setMemberNick] = useState<string>("");
   const [memberPhone, setMemberPhone] = useState<string>("");
   const [memberPassword, setMemberPassword] = useState<string>("");
@@ -399,17 +388,15 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
-        className={classes.modal}
+        sx={modalSx}
         open={signupOpen}
         onClose={handleSignupClose}
         closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
+        slots={{ backdrop: Backdrop }}
+        slotProps={modalSlotProps}
       >
         <Fade in={signupOpen}>
-          <AuthModalWrapper className={classes.paper}>
+          <AuthModalWrapper sx={{ outline: "none" }}>
             <CloseButton onClick={handleSignupClose} size="small">
               <Close />
             </CloseButton>
@@ -534,17 +521,15 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
-        className={classes.modal}
+        sx={modalSx}
         open={loginOpen}
         onClose={handleLoginClose}
         closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
+        slots={{ backdrop: Backdrop }}
+        slotProps={modalSlotProps}
       >
         <Fade in={loginOpen}>
-          <AuthModalWrapper className={classes.paper}>
+          <AuthModalWrapper sx={{ outline: "none" }}>
             <CloseButton onClick={handleLoginClose} size="small">
               <Close />
             </CloseButton>

@@ -11,7 +11,7 @@ import { retrieveNewDishes } from "./selector";
 import { Product } from "../../../lib/types/product";
 import { serverApi } from "../../../lib/config";
 import { formatEnumLabel } from "../../../lib/enums/product.enum";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
  
 /** REDUX SLICE & SELECTOR */
@@ -22,11 +22,11 @@ const newDishesRetriever = createSelector(
 
 export default function NewDishes() {
     const { newDishes } = useSelector(newDishesRetriever);
-    const history = useHistory();
+    const navigate = useNavigate();
     const safeNewDishes = Array.isArray(newDishes) ? newDishes : [];
 
     const handleCardClick = (productId: string) => {
-      history.push(`/products/${productId}`);
+      navigate(`/products/${productId}`);
     };
 
   return (

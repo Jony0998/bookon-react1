@@ -6,19 +6,19 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { Settings } from "./Settings";
 import "../../../css/userPage.css";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGlobals } from "../../hooks/useGlobals";
 import { serverApi } from "../../../lib/config";
 import { MemberType } from "../../../lib/enums/member.enum";
 
 export default function UserPage() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const {authMember} = useGlobals();
 
   // Redirect guests away (inside an effect, not during render)
   useEffect(() => {
-    if (!authMember) history.push("/");
-  }, [authMember, history]);
+    if (!authMember) navigate("/");
+  }, [authMember, navigate]);
 
   if (!authMember) return null;
 

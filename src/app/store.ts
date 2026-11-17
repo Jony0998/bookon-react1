@@ -9,7 +9,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) => {
     const base = getDefaultMiddleware();
     // @ts-ignore
-    return process.env.NODE_ENV !== "production" ? base.concat(reduxLogger) : base;
+    return import.meta.env.DEV ? base.concat(reduxLogger) : base;
   },
   reducer: {
     homePage: HomePageReducer,

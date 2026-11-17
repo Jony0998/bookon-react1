@@ -7,7 +7,7 @@ import CardContent from '@mui/joy/CardContent';
 import CardOverflow from '@mui/joy/CardOverflow';
 import Typography from "@mui/joy/Typography";
 import { MenuBook, Visibility, Star } from "@mui/icons-material";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useSelector } from "react-redux"; 
 import { createSelector } from "reselect";
@@ -26,7 +26,7 @@ const popularDishesRetriever = createSelector(
 
 export default function PopularDishes() {
   const { popularDishes } = useSelector(popularDishesRetriever);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // Sort by views in descending order (most viewed first)
   // This ensures proper sorting even if data comes unsorted
@@ -42,7 +42,7 @@ export default function PopularDishes() {
     : [];
 
   const handleCardClick = (productId: string) => {
-    history.push(`/products/${productId}`);
+    navigate(`/products/${productId}`);
   };
 
     return (

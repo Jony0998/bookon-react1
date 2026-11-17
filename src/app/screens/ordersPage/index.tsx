@@ -16,7 +16,7 @@ import { Order, OrderInquiry } from "../../../lib/types/order";
 import { OrderStatus } from "../../../lib/enums/order.enum";
 import OrderService from "../../services/OrderService";
 import { useGlobals } from "../../hooks/useGlobals";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../../css/order.css";
 import { serverApi } from "../../../lib/config";
 import { MemberType } from "../../../lib/enums/member.enum";
@@ -34,7 +34,7 @@ export default function OrdersPage() {
   const {setPausedOrders, setProcessOrders, setFinishedOrders } = 
     actionDispatch(useDispatch());
   const {orderBuilder, authMember} = useGlobals();  
-  const history = useHistory();
+  const navigate = useNavigate();
   const [value, setValue] = useState("1");
   const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
     page: 1,
@@ -44,8 +44,8 @@ export default function OrdersPage() {
 
   // Redirect guests away (inside an effect, not during render)
   useEffect(() => {
-    if (!authMember) history.push("/");
-  }, [authMember, history]);
+    if (!authMember) navigate("/");
+  }, [authMember, navigate]);
 
   useEffect(() => {
     if (!authMember) return;
