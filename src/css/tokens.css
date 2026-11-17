@@ -1,0 +1,229 @@
+/*
+ * BookOn design tokens.
+ * Day = warm paper; Night = lamp-lit library. Every new component reads
+ * these variables, so switching data-theme on <html> restyles the site.
+ */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #fbf7ef;
+  --surface: #ffffff;
+  --surface2: #f2ebdd;
+  --ink: #1c1a27;
+  --ink2: #5b5566;
+  --line: #e6ddcb;
+  --accent: #0e7c86;
+  --accent-ink: #ffffff;
+  --gold: #e3a21a;
+  --gold-ink: #1c1a27;
+  --ok: #2e8b57;
+  --danger: #c2334d;
+  --glow: rgba(227, 162, 26, 0.16);
+  --shadow: 0 22px 40px -22px rgba(28, 26, 39, 0.35);
+  --plank: #d8c7a6;
+  --overlay: rgba(28, 26, 39, 0.45);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #12111a;
+  --surface: #1b1a26;
+  --surface2: #262435;
+  --ink: #f3eee4;
+  --ink2: #b3abbe;
+  --line: #302d41;
+  --accent: #3cc3c8;
+  --accent-ink: #0b1416;
+  --gold: #f2b53a;
+  --gold-ink: #1a1405;
+  --ok: #5bd08e;
+  --danger: #ff7a90;
+  --glow: rgba(242, 181, 58, 0.2);
+  --shadow: 0 22px 44px -18px rgba(0, 0, 0, 0.7);
+  --plank: #4a3b2a;
+  --overlay: rgba(0, 0, 0, 0.6);
+}
+
+:root {
+  --font-display: "Literata", Georgia, "Times New Roman", serif;
+  --font-ui: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* ---------- shared building blocks (bo- prefix avoids old CSS) ---------- */
+
+.bo-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 32px;
+  padding-right: 32px;
+  box-sizing: border-box;
+}
+
+.bo-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.bo-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.bo-muted {
+  color: var(--ink2);
+}
+
+.bo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s, background-color 0.2s, border-color 0.2s;
+  box-sizing: border-box;
+}
+.bo-btn:hover { filter: brightness(1.08); }
+.bo-btn:active { transform: scale(0.97); }
+.bo-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.bo-btn--lg { min-height: 54px; padding: 0 26px; font-size: 16px; }
+.bo-btn--primary { background: var(--accent); color: var(--accent-ink); }
+.bo-btn--dark { background: var(--ink); color: var(--bg); }
+.bo-btn--ghost { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.bo-btn--ghost:hover { border-color: var(--accent); filter: none; }
+
+.bo-icon-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+  padding: 0;
+}
+.bo-icon-btn:hover { border-color: var(--accent); }
+.bo-icon-btn:active { transform: scale(0.95); }
+
+.bo-chip {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+.bo-chip:hover { border-color: var(--accent); }
+.bo-chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.bo-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--surface2);
+  color: var(--ink2);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.bo-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s, background-color 0.5s;
+}
+
+.bo-input {
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  box-sizing: border-box;
+  width: 100%;
+}
+.bo-input:focus { outline: none; border-color: var(--accent); }
+
+.bo-girih-bg {
+  position: absolute;
+  pointer-events: none;
+  color: var(--accent);
+  opacity: 0.13;
+}
+
+.bo-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.bo-skeleton {
+  background: linear-gradient(90deg, var(--surface2), var(--surface), var(--surface2));
+  background-size: 200% 100%;
+  animation: bo-shimmer 1.4s linear infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes bo-shimmer { to { background-position: -200% 0; } }
+
+:where(.bo-root) :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .bo-wrap { padding-left: 16px; padding-right: 16px; }
+  .bo-section-title { font-size: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

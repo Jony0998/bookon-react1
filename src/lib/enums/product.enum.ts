@@ -1,4 +1,11 @@
 // Must stay in sync with backend: src/libs/types/enums/product.enum.ts
+export enum ProductShelf {
+    CLASSIC = "CLASSIC",
+    UZBEK_LIT = "UZBEK_LIT",
+    GROWTH = "GROWTH",
+    EVENING_TEA = "EVENING_TEA",
+}
+
 export enum ProductLanguage {
     UZ = "UZ",
     RU = "RU",

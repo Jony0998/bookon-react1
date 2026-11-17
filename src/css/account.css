@@ -1,0 +1,202 @@
+/* Orders, profile, public profile and help pages */
+.bo-account { font-family: var(--font-ui); color: var(--ink); }
+.bo-account__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 32px;
+  align-items: start;
+}
+.bo-account__grid--profile { grid-template-columns: 340px minmax(0, 1fr); }
+.bo-account__main { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.bo-account__side { display: flex; flex-direction: column; gap: 20px; }
+
+/* ---------- Tabs ---------- */
+.bo-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--surface2);
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.bo-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink2);
+  font: inherit;
+  font-weight: 800;
+  font-size: 15px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.bo-tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.35); }
+.bo-tabs__count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 12px;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+}
+
+.bo-alert, .bo-success {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.bo-alert { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+.bo-success { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+
+/* ---------- Order card ---------- */
+.bo-orders { display: flex; flex-direction: column; gap: 20px; }
+.bo-order { padding: 24px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 20px; }
+.bo-order__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+.bo-order__head > div { display: flex; flex-direction: column; gap: 2px; }
+.bo-order__head strong { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.bo-steps { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--ink2); }
+.bo-steps li { display: inline-flex; align-items: center; gap: 6px; }
+.bo-steps li + li::before { content: ""; width: 24px; height: 2px; border-radius: 2px; background: var(--line); margin-right: 2px; }
+.bo-steps li.is-done { color: var(--ink); }
+.bo-steps li.is-done + li.is-done::before { background: var(--accent); }
+.bo-steps__dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+}
+.bo-steps li.is-done .bo-steps__dot { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.bo-order__items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.bo-order__items li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+}
+.bo-order__cover { display: block; }
+.bo-order__cover .bo-cover { border-radius: 2px 6px 6px 2px; box-shadow: none; }
+.bo-order__name { font-weight: 700; overflow-wrap: anywhere; }
+.bo-order__foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.bo-order__foot dl { margin: 0; display: flex; flex-wrap: wrap; gap: 24px; }
+.bo-order__foot dl div { display: flex; flex-direction: column; gap: 2px; }
+.bo-order__foot dt { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); }
+.bo-order__foot dd { margin: 0; font-weight: 800; font-size: 17px; }
+.bo-order__foot .is-total dd { font-size: 24px; color: var(--accent); }
+.bo-order__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ---------- Side cards ---------- */
+.bo-side-card { padding: 22px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 14px; }
+.bo-side-card__title { margin: 0; display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.bo-side-card__title svg { color: var(--accent); }
+.bo-side-card__member { display: flex; align-items: center; gap: 14px; }
+.bo-side-card__member img { width: 56px; height: 56px; border-radius: 999px; object-fit: cover; border: 2px solid var(--gold); background: var(--surface2); }
+.bo-side-card__member div { display: flex; flex-direction: column; gap: 2px; }
+.bo-side-card__member strong { font-size: 18px; }
+.bo-side-card__row { display: flex; flex-direction: column; gap: 4px; padding-top: 14px; border-top: 1px solid var(--line); font-weight: 600; }
+.bo-side-card__row .bo-muted { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.bo-side-card__hint { margin: 0; font-size: 13px; }
+.bo-quick { padding: 10px; gap: 2px; }
+.bo-quick a { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 12px; border-radius: 14px; color: var(--ink); font-weight: 700; text-decoration: none; }
+.bo-quick a:hover { background: var(--surface2); color: var(--accent); }
+.bo-quick svg { color: var(--accent); }
+
+/* ---------- Profile ---------- */
+.bo-profile { padding: 32px 24px; border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.bo-profile--public { max-width: 440px; margin: 0 auto; }
+.bo-profile__avatar { width: 112px; height: 112px; border-radius: 999px; object-fit: cover; border: 3px solid var(--gold); background: var(--surface2); }
+.bo-profile__nick { margin: 4px 0 0; font-family: var(--font-display); font-size: 28px; font-weight: 600; overflow-wrap: anywhere; }
+.bo-profile__stats { display: flex; gap: 12px; margin-top: 6px; }
+.bo-profile__stats div { display: flex; flex-direction: column; align-items: center; padding: 10px 22px; border-radius: 16px; background: var(--surface2); }
+.bo-profile__stats strong { font-size: 24px; }
+.bo-profile__stats span { font-size: 13px; }
+.bo-profile__desc { margin: 6px 0 0; line-height: 1.6; white-space: pre-line; }
+
+.bo-form { padding: 28px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 24px; }
+.bo-form__photo { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.bo-form__photo img { width: 88px; height: 88px; border-radius: 999px; object-fit: cover; background: var(--surface2); }
+.bo-form__photo p { margin: 8px 0 0; font-size: 13px; }
+.bo-form__photo label { cursor: pointer; }
+.bo-form__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.bo-field { display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 700; }
+.bo-field--wide { grid-column: 1 / -1; }
+.bo-textarea { height: auto; padding: 12px 16px; resize: vertical; line-height: 1.5; }
+.bo-form__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* ---------- Help ---------- */
+.bo-help-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 0 40px;
+  background: radial-gradient(700px 360px at 85% 0%, var(--glow), transparent 70%), var(--surface2);
+}
+.bo-help { display: flex; flex-direction: column; gap: 24px; }
+.bo-help #help-panel { max-width: 860px; }
+.bo-faq { display: flex; flex-direction: column; gap: 12px; }
+.bo-faq details { padding: 0; border-radius: var(--radius); }
+.bo-faq summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 60px;
+  padding: 14px 22px;
+  font-weight: 800;
+  font-size: 17px;
+  cursor: pointer;
+}
+.bo-faq summary::-webkit-details-marker { display: none; }
+.bo-faq summary::after { content: "+"; flex: none; font-size: 24px; font-weight: 400; color: var(--accent); transition: transform 0.25s var(--ease); }
+.bo-faq details[open] summary::after { transform: rotate(45deg); }
+.bo-faq details p { margin: 0; padding: 0 22px 20px; line-height: 1.7; color: var(--ink2); }
+.bo-terms { margin: 0; padding: 24px 24px 24px 48px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 14px; line-height: 1.6; font-size: 16px; }
+.bo-terms li::marker { color: var(--accent); font-weight: 800; }
+.bo-contact { padding: 28px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 16px; }
+.bo-contact dl { margin: 0; display: grid; gap: 12px; }
+.bo-contact dt { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); }
+.bo-contact dd { margin: 4px 0 0; font-size: 18px; font-weight: 700; }
+.bo-contact a { color: var(--accent); text-decoration: none; }
+
+/* ---------- Confirm dialog ---------- */
+.bo-confirm { padding: 28px; font-family: var(--font-ui); display: flex; flex-direction: column; gap: 22px; }
+.bo-confirm p { margin: 0; font-size: 17px; line-height: 1.55; font-weight: 600; }
+.bo-confirm__actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.bo-btn--danger { background: var(--danger); color: #fff; }
+
+@media (max-width: 960px) {
+  .bo-account__grid, .bo-account__grid--profile { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .bo-order { padding: 16px; }
+  .bo-order__items li { grid-template-columns: 40px minmax(0, 1fr) auto; }
+  .bo-order__items li > .bo-muted { grid-column: 2; grid-row: 2; margin-top: -10px; font-size: 13px; }
+  .bo-order__items li > strong { grid-column: 3; grid-row: 1 / span 2; }
+  .bo-order__actions { width: 100%; }
+  .bo-order__actions .bo-btn { flex: 1; }
+  .bo-form { padding: 18px; }
+  .bo-form__grid { grid-template-columns: minmax(0, 1fr); }
+  .bo-steps li:not(.is-done):not(:first-child) { display: none; }
+}

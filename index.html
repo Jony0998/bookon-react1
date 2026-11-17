@@ -1,39 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="/icons/books-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#667eea" />
+    <meta name="theme-color" content="#fbf7ef" />
+
+    <!-- Apply the saved (or device) colour theme and language before first paint -->
+    <script>
+      (function () {
+        var d = document.documentElement, t, l;
+        try { t = localStorage.getItem("bookon-theme"); l = localStorage.getItem("bookon-lang"); } catch (e) {}
+        if (t !== "light" && t !== "dark") t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        d.dataset.theme = t;
+        if (l === "uz" || l === "ru" || l === "en") d.lang = l;
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..600&family=Manrope:wght@400..800&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- SEO -->
-    <meta name="description" content="BookOn — your online bookstore. Discover bestsellers, classics, and new releases. Order books delivered straight to your door." />
-    <meta name="keywords" content="books, bookstore, buy books, online bookstore, bestsellers, BookOn" />
+    <meta name="description" content="BookOn — o'zbek, rus va ingliz tilidagi kitoblar onlayn do'koni. Tanlang, buyurtma bering, eshigingizgacha yetkazamiz." />
+    <meta name="keywords" content="kitoblar, kitob do'koni, onlayn kitob, книги, книжный магазин, books, bookstore, BookOn" />
     <meta name="author" content="BookOn" />
 
     <!-- Open Graph (Facebook, Telegram, WhatsApp, LinkedIn) -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://bookon.sale/" />
     <meta property="og:site_name" content="BookOn" />
-    <meta property="og:title" content="BookOn — Discover Your Next Favourite Book" />
-    <meta property="og:description" content="Browse thousands of books — bestsellers, classics, and new arrivals. Fast delivery, great prices. Start your reading journey today!" />
+    <meta property="og:title" content="BookOn — har bir kitob yangi dunyoga eshik" />
+    <meta property="og:description" content="O'zbek, rus va ingliz tilidagi kitoblar bir joyda. Tanlang, buyurtma bering — qolganini biz hal qilamiz." />
     <meta property="og:image" content="https://bookon.sale/icons/books-logo.webp" />
     <meta property="og:image:width" content="600" />
     <meta property="og:image:height" content="600" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content="uz_UZ" />
+    <meta property="og:locale:alternate" content="ru_RU" />
+    <meta property="og:locale:alternate" content="en_US" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BookOn — Discover Your Next Favourite Book" />
-    <meta name="twitter:description" content="Browse thousands of books — bestsellers, classics, and new arrivals. Fast delivery, great prices." />
+    <meta name="twitter:title" content="BookOn — har bir kitob yangi dunyoga eshik" />
+    <meta name="twitter:description" content="O'zbek, rus va ingliz tilidagi kitoblar onlayn do'koni." />
     <meta name="twitter:image" content="https://bookon.sale/icons/books-logo.webp" />
 
     <link rel="apple-touch-icon" href="/icons/books-icon.png" />
     <link rel="manifest" href="/manifest.json" />
-    <title>BookOn — Discover Your Next Favourite Book</title>
+    <title>BookOn — kitoblar onlayn do'koni</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>BookOn ishlashi uchun JavaScript yoqilgan bo'lishi kerak.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
   </body>

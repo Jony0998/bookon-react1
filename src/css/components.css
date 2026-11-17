@@ -1,0 +1,189 @@
+/* ---------- Book cover ---------- */
+.bo-cover {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 4px 14px 14px 4px;
+  box-shadow: 0 14px 28px -14px rgba(0, 0, 0, 0.45);
+  width: 100%;
+}
+.bo-cover::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1) 55%, transparent);
+  pointer-events: none;
+}
+.bo-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), transparent 40%);
+  pointer-events: none;
+}
+.bo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bo-cover__type {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20% 9% 10% 15%;
+}
+.bo-cover__rule {
+  height: 2px;
+  background: currentColor;
+  opacity: 0.55;
+}
+.bo-cover__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.12;
+  /* break inside a word only when it cannot fit on its own line */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.bo-cover__author {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* ---------- Book card ---------- */
+.bo-book-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 22px;
+  min-width: 0;
+}
+.bo-book-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow);
+}
+.bo-book-card__cover {
+  position: relative;
+  display: block;
+  text-decoration: none;
+}
+.bo-book-card__sale {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--gold-ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+.bo-book-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.bo-book-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.bo-book-card__title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.bo-book-card__title:hover { color: var(--accent); }
+.bo-book-card__author { font-size: 14px; }
+.bo-book-card__buy {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bo-book-card__buy .bo-btn { padding: 0 16px; font-size: 14px; }
+.bo-book-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.bo-book-card__price strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.bo-book-card__price s { font-size: 14px; }
+
+/* ---------- Full-page messages (404, sign-in prompts, empty states) ---------- */
+.bo-page { min-height: 60vh; }
+.bo-page-message {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding-top: 48px;
+  padding-bottom: 64px;
+  font-family: var(--font-ui);
+  color: var(--ink);
+}
+.bo-page-message--inline { min-height: 0; padding: 48px 0; }
+.bo-page-message p { margin: 0; max-width: 480px; font-size: 17px; }
+.bo-page-message__code {
+  font-family: var(--font-display);
+  font-size: 88px !important;
+  line-height: 1;
+  font-weight: 600;
+  color: var(--accent);
+}
+.bo-page-message__icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--surface2);
+  color: var(--danger);
+}
+.bo-page-message__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 12px; }
+
+.bo-grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+@media (max-width: 1024px) {
+  .bo-grid4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .bo-grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .bo-book-card { padding: 10px; gap: 10px; }
+  .bo-book-card__title { font-size: 16px; }
+  .bo-book-card .bo-cover__title { font-size: 16px !important; }
+  .bo-book-card .bo-cover__author { font-size: 9px; }
+  .bo-book-card__price strong { font-size: 18px; }
+}

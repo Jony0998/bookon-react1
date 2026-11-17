@@ -19,6 +19,8 @@ class ProductService {
        limit: input.limit,
      };
      if (input.productCollection) params.productCollection = input.productCollection;
+     if (input.productLanguage) params.productLanguage = input.productLanguage;
+     if (input.shelf) params.shelf = input.shelf;
      if (input.search) params.search = input.search;
 
      // axios encodes params, so "&", "#" or "+" in a search term are safe
@@ -49,6 +51,12 @@ class ProductService {
    } catch(err) {
      return false;
    }
+ }
+
+ /** Books the signed-in member liked (wishlist) */
+ public async getLikedProducts(): Promise<Product[]> {
+   const result = await axios.get(`${this.path}/product/liked`, { withCredentials: true });
+   return result.data;
  }
 
  public async likeProduct(productId: string): Promise<Product> {

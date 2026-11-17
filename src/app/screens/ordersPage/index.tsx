@@ -1,199 +1,255 @@
-
-import { SyntheticEvent, useEffect, useState } from "react";
-import { Box, Container, Stack } from "@mui/material";
-import TabContext from "@mui/lab/TabContext";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { MenuBook, ShoppingBag, CheckCircle, CreditCard } from "@mui/icons-material";
-import PausedOrders from "./PausedOrders";
-import ProcessOrders from "./ProcessOrders";
-import FinishedOrders from "./FinishedOrders";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { useDispatch } from "react-redux"; 
-import { Dispatch } from "@reduxjs/toolkit";
-import { setPausedOrders, setProcessOrders, setFinishedOrders } from "./slice";
-import { Order, OrderInquiry } from "../../../lib/types/order";
-import { OrderStatus } from "../../../lib/enums/order.enum";
-import OrderService from "../../services/OrderService";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useGlobals } from "../../hooks/useGlobals";
-import { useNavigate } from "react-router-dom";
-import "../../../css/order.css";
+import { useCart, toCartItem } from "../../context/CartContext";
+import OrderService from "../../services/OrderService";
+import { Order } from "../../../lib/types/order";
+import { OrderStatus } from "../../../lib/enums/order.enum";
+import { ProductStatus } from "../../../lib/enums/product.enum";
+import { formatDate, formatPrice } from "../../../lib/format";
 import { serverApi } from "../../../lib/config";
-import { MemberType } from "../../../lib/enums/member.enum";
+import BookCover from "../../components/ui/BookCover";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import { BoxIcon, CheckIcon, RouteIcon, TruckIcon } from "../../components/ui/Icons";
+import "../../../css/account.css";
 
+const PAGE_SIZE = 10;
+const TABS = [
+  { status: OrderStatus.PAUSE, label: "orders.tabPending", empty: "orders.emptyPending" },
+  { status: OrderStatus.PROCESS, label: "orders.tabProcess", empty: "orders.emptyProcess" },
+  { status: OrderStatus.FINISH, label: "orders.tabFinish", empty: "orders.emptyFinish" },
+] as const;
+type TabStatus = (typeof TABS)[number]["status"];
 
-/** REDUX SLICE & SELECTOR */
- const actionDispatch = (dispatch: Dispatch) => ({
-  setPausedOrders: (data: Order[]) => dispatch(setPausedOrders(data)),
-  setProcessOrders: (data: Order[]) => dispatch(setProcessOrders(data)),
-  setFinishedOrders: (data: Order[]) => dispatch(setFinishedOrders(data)),
- });
-
+type Pending = { order: Order; next: OrderStatus } | null;
 
 export default function OrdersPage() {
-  const {setPausedOrders, setProcessOrders, setFinishedOrders } = 
-    actionDispatch(useDispatch());
-  const {orderBuilder, authMember} = useGlobals();  
+  const { t, i18n } = useTranslation();
+  const { authMember, orderBuilder, setOrderBuilder } = useGlobals();
   const navigate = useNavigate();
-  const [value, setValue] = useState("1");
-  const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
-    page: 1,
-    limit: 5,
-    orderStatus: OrderStatus.PAUSE,
-  });
+  const [tab, setTab] = useState<TabStatus>(OrderStatus.PAUSE);
+  const [lists, setLists] = useState<Partial<Record<TabStatus, Order[]>>>({});
+  const [more, setMore] = useState<Partial<Record<TabStatus, boolean>>>({});
+  const [pending, setPending] = useState<Pending>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
-  // Redirect guests away (inside an effect, not during render)
   useEffect(() => {
     if (!authMember) navigate("/");
   }, [authMember, navigate]);
 
+  const load = useCallback(
+    async (status: TabStatus, page: number) => {
+      const list = await new OrderService().getMyOrders({ page, limit: PAGE_SIZE, orderStatus: status });
+      setLists((current) => ({ ...current, [status]: page === 1 ? list : [...(current[status] || []), ...list] }));
+      setMore((current) => ({ ...current, [status]: list.length === PAGE_SIZE }));
+    },
+    []
+  );
+
+  // Reload every tab when an order is created or changes status
   useEffect(() => {
     if (!authMember) return;
-    const order = new OrderService();
+    TABS.forEach(({ status }) => load(status, 1).catch(() => setError(t("common.loadError"))));
+  }, [authMember, orderBuilder, load, t]);
 
-   order
-   .getMyOrders({...orderInquiry, orderStatus: OrderStatus.PAUSE})
-   .then((data) => setPausedOrders(data))
-   .catch((err) => console.log(err));
+  const runUpdate = async () => {
+    if (!pending) return;
+    setBusy(true);
+    setError("");
+    try {
+      await new OrderService().updateOrder({ orderId: pending.order._id, orderStatus: pending.next });
+      if (pending.next === OrderStatus.PROCESS) setTab(OrderStatus.PROCESS);
+      if (pending.next === OrderStatus.FINISH) setTab(OrderStatus.FINISH);
+      setOrderBuilder(new Date());
+      setPending(null);
+    } catch {
+      setError(t("orders.failed"));
+      setPending(null);
+    } finally {
+      setBusy(false);
+    }
+  };
 
-    order
-   .getMyOrders({...orderInquiry, orderStatus: OrderStatus.PROCESS})
-   .then((data) => setProcessOrders(data))
-   .catch((err) => console.log(err));
+  if (!authMember) return null;
+  const current = lists[tab];
+  const activeTab = TABS.find((x) => x.status === tab)!;
 
-    order
-   .getMyOrders({...orderInquiry, orderStatus: OrderStatus.FINISH})
-   .then((data) => setFinishedOrders(data))
-   .catch((err) => console.log(err));
-
-  }, [authMember, orderInquiry, orderBuilder, setPausedOrders, setProcessOrders, setFinishedOrders]);
-
-
-  /** HANDLERS **/
-
-const handleChange = (e: SyntheticEvent, newValue: string) => {
-  setValue(newValue);
-};
-
- if (!authMember) return null;
+  const ask = pending
+    ? pending.next === OrderStatus.DELETE
+      ? { message: t("orders.cancelAsk"), label: t("orders.cancel"), danger: true }
+      : pending.next === OrderStatus.PROCESS
+      ? { message: t("orders.confirmAsk"), label: t("orders.confirm"), danger: false }
+      : { message: t("orders.receivedAsk"), label: t("orders.received"), danger: false }
+    : null;
 
   return (
-    <div className={"order-page"}>
-      <Container className={"order-container"}>
-        <Stack className={"order-left"}>
-        <TabContext value={value}>
-          <Box className={"order-nav-frame"}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider"}}>
-              <Tabs
-              value={value}
-              onChange={handleChange}
-              aria-label="basic tabs example"
-              className={"table-list"}
-              >
-         <Tab 
-           icon={<ShoppingBag sx={{ fontSize: 20, mr: 1 }} />}
-           iconPosition="start"
-           label="PENDING ORDERS" 
-           value={"1"}
-         />
-         <Tab 
-           icon={<MenuBook sx={{ fontSize: 20, mr: 1 }} />}
-           iconPosition="start"
-           label="PROCESSING ORDERS" 
-           value={"2"}
-         />
-         <Tab 
-           icon={<CheckCircle sx={{ fontSize: 20, mr: 1 }} />}
-           iconPosition="start"
-           label="COMPLETED ORDERS" 
-           value={"3"}
-         />
-              </Tabs>
-            </Box>
-          </Box>
-          <Stack className={"order-main-content"}>
-            <PausedOrders setValue={setValue}/>
-            <ProcessOrders  setValue={setValue}/>
-            <FinishedOrders />
-          </Stack>
-          </TabContext>  
-        </Stack>
+    <main className="bo-wrap bo-section bo-page bo-account">
+      <h1 className="bo-section-title">{t("orders.title")}</h1>
+      <p className="bo-muted bo-section__sub" style={{ marginBottom: 28 }}>{t("orders.sub")}</p>
 
-    <Stack className="order-right" spacing={3}>
-      <Box className="order-info-box">
-        <Box className="member-box">
-          <div className="order-user-img">
-            <img
-              src={ authMember?.memberImage
-                  ? `${serverApi}/${authMember.memberImage}`
-                  : "/icons/default-user.svg"}
-              alt="User"
-              className="order-user-avatar"
-            />
-            <div className="order-user-icon-box">
-              <img
-                src={
-                  authMember?.memberType === MemberType.LIBRARY
-                        ? "/icons/restaurant.svg"
-                        : "/icons/user-badge.svg"}
-             
-                className="order-user-prof-img"
-              />
-            </div>
+      <div className="bo-account__grid">
+        <div className="bo-account__main">
+          <div className="bo-tabs" role="tablist" aria-label={t("orders.title")}>
+            {TABS.map(({ status, label }) => (
+              <button
+                key={status}
+                type="button"
+                role="tab"
+                id={`tab-${status}`}
+                aria-selected={tab === status}
+                aria-controls="orders-panel"
+                onClick={() => setTab(status)}
+              >
+                {t(label)}
+                {lists[status]?.length ? <span className="bo-tabs__count">{lists[status]!.length}{more[status] ? "+" : ""}</span> : null}
+              </button>
+            ))}
           </div>
 
-        
-          <span className="order-user-name">{authMember?.memberNick}</span>
-          <span className="order-user-prof">
-            {authMember?.memberType === MemberType.LIBRARY ? "Library" : "Reader"}
-          </span>
-        </Box>
-        <Box className="liner"></Box>
+          {error ? <p className="bo-alert" role="alert">{error}</p> : null}
 
-        <Box className="order-user-address">
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <LocationOnIcon sx={{ mr: 1 }} />
-            <span>{authMember?.memberAddress 
-                  ? authMember.memberAddress 
-                  : 
-                  "Do not exist"}</span>
-          </Box>
-        </Box>
-      </Box>
+          <div id="orders-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="bo-orders">
+            {!current ? (
+              Array.from({ length: 2 }, (_, i) => <div key={i} className="bo-skeleton" style={{ height: 220, borderRadius: 24 }} />)
+            ) : current.length === 0 ? (
+              <div className="bo-page-message bo-page-message--inline">
+                <span className="bo-page-message__icon" style={{ color: "var(--accent)" }}><BoxIcon size={36} /></span>
+                <p className="bo-muted">{t(activeTab.empty)}</p>
+                <Link to="/products" className="bo-btn bo-btn--primary">{t("cart.browse")}</Link>
+              </div>
+            ) : (
+              current.map((order) => (
+                <OrderCard key={order._id} order={order} lang={i18n.language} onAction={(next) => setPending({ order, next })} />
+              ))
+            )}
+            {current && more[tab] ? (
+              <button type="button" className="bo-btn bo-btn--ghost" style={{ alignSelf: "center" }} onClick={() => load(tab, Math.ceil(current.length / PAGE_SIZE) + 1)}>
+                {t("catalog.loadMore")}
+              </button>
+            ) : null}
+          </div>
+        </div>
 
-        <Box className="order-info-box">
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2, width: "100%" }}>
-          <CreditCard sx={{ fontSize: 24, mr: 1, color: '#667eea' }} />
-          <Box sx={{ fontSize: '18px', fontWeight: 700, color: '#1a1a2e' }}>Payment Information</Box>
-        </Box>
-        {/* No card data is collected or shown on the site */}
-        <Box sx={{ width: "100%", color: "#555", fontSize: "15px", lineHeight: 1.6 }}>
-          Payment is made when your order is delivered. Press
-          <b> Proceed to Payment</b> on a pending order to confirm it, and our
-          library will contact you to arrange delivery.
-        </Box>
+        <aside className="bo-account__side">
+          <div className="bo-card bo-side-card">
+            <div className="bo-side-card__member">
+              <img
+                src={authMember.memberImage ? `${serverApi}/${authMember.memberImage}` : "/icons/default-user.svg"}
+                alt=""
+                onError={(e) => ((e.target as HTMLImageElement).src = "/icons/default-user.svg")}
+              />
+              <div>
+                <strong>{authMember.memberNick}</strong>
+                <span className="bo-muted">{t("home.points", { count: authMember.memberPoints ?? 0 })}</span>
+              </div>
+            </div>
+            <div className="bo-side-card__row">
+              <span className="bo-muted">{t("orders.address")}</span>
+              <span>{authMember.memberAddress || t("orders.noAddress")}</span>
+              <Link to="/member-page" className="bo-link-arrow" style={{ minHeight: 32 }}>{t("orders.editAddress")}</Link>
+            </div>
+            <p className="bo-muted bo-side-card__hint">{t("orders.pointsHint")}</p>
+          </div>
+          <div className="bo-card bo-side-card">
+            <h2 className="bo-side-card__title"><TruckIcon size={20} />{t("orders.payTitle")}</h2>
+            <p className="bo-muted" style={{ margin: 0, lineHeight: 1.6 }}>{t("orders.payText")}</p>
+          </div>
+        </aside>
+      </div>
 
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mt: 4,
-            px: 2,
-            gap: 1,
-          }}
-        >
-          <img src="/icons/western-card.svg" alt="Western Union" height={30} />
-          <img src="/icons/master-card.svg" alt="MasterCard" height={30} />
-          <img src="/icons/paypal-card.svg" alt="PayPal" height={30} />
-          <img src="/icons/visa-card.svg" alt="Visa" height={30} />
-        </Box>
-      </Box>
-    </Stack>
+      <ConfirmDialog
+        open={!!pending}
+        message={ask?.message ?? ""}
+        confirmLabel={ask?.label ?? ""}
+        danger={ask?.danger}
+        busy={busy}
+        onConfirm={runUpdate}
+        onClose={() => setPending(null)}
+      />
+    </main>
+  );
+}
 
-      </Container>
+function OrderCard({ order, lang, onAction }: { order: Order; lang: string; onAction: (next: OrderStatus) => void }) {
+  const { t } = useTranslation();
+  const { addProduct, openCart } = useCart();
+  const step = order.orderStatus === OrderStatus.PAUSE ? 0 : order.orderStatus === OrderStatus.PROCESS ? 1 : 2;
+  const steps = [t("orders.stepPending"), t("orders.stepProcess"), t("orders.stepFinish")];
+  const products = order.productData || [];
 
-    </div>
-  )
+  const reorder = () => {
+    order.orderItems.forEach((item) => {
+      const product = products.find((p) => p._id === item.productId);
+      if (product && product.productStatus === ProductStatus.PROCESS && product.productLeftCount > 0) {
+        addProduct(product, item.itemQuantity);
+      }
+    });
+    openCart();
+  };
+  const canReorder = order.orderItems.some((item) => {
+    const product = products.find((p) => p._id === item.productId);
+    return product && product.productStatus === ProductStatus.PROCESS && product.productLeftCount > 0;
+  });
+
+  return (
+    <article className="bo-card bo-order">
+      <header className="bo-order__head">
+        <div>
+          <strong>{t("orders.order")} #{order._id.slice(-6).toUpperCase()}</strong>
+          <span className="bo-muted">{formatDate(order.createdAt, lang)}</span>
+        </div>
+        <ol className="bo-steps" aria-label={steps[step]}>
+          {steps.map((label, i) => (
+            <li key={label} className={i <= step ? "is-done" : ""} aria-current={i === step ? "step" : undefined}>
+              <span className="bo-steps__dot">{i < step ? <CheckIcon size={12} /> : i === 1 ? <RouteIcon size={12} /> : null}</span>
+              {label}
+            </li>
+          ))}
+        </ol>
+      </header>
+
+      <ul className="bo-order__items">
+        {order.orderItems.map((item) => {
+          const product = products.find((p) => p._id === item.productId);
+          const name = product?.productName ?? t("orders.unavailable");
+          return (
+            <li key={item._id}>
+              {product ? (
+                <Link to={`/products/${product._id}`} className="bo-order__cover" aria-label={name}>
+                  <BookCover id={product._id} title={name} image={product.productImages?.[0]} titleSize={9} />
+                </Link>
+              ) : (
+                <span className="bo-order__cover"><BookCover id={item.productId} title={name} titleSize={9} /></span>
+              )}
+              <span className="bo-order__name">{name}</span>
+              <span className="bo-muted">{formatPrice(item.itemPrice)} × {item.itemQuantity}</span>
+              <strong>{formatPrice(item.itemPrice * item.itemQuantity)}</strong>
+            </li>
+          );
+        })}
+      </ul>
+
+      <footer className="bo-order__foot">
+        <dl>
+          <div><dt>{t("orders.books")}</dt><dd>{formatPrice(order.orderTotal - order.orderDelivery)}</dd></div>
+          <div><dt>{t("orders.shipping")}</dt><dd>{order.orderDelivery ? formatPrice(order.orderDelivery) : t("cart.free")}</dd></div>
+          <div className="is-total"><dt>{t("orders.total")}</dt><dd>{formatPrice(order.orderTotal)}</dd></div>
+        </dl>
+        <div className="bo-order__actions">
+          {order.orderStatus === OrderStatus.PAUSE ? (
+            <>
+              <button type="button" className="bo-btn bo-btn--ghost" onClick={() => onAction(OrderStatus.DELETE)}>{t("orders.cancel")}</button>
+              <button type="button" className="bo-btn bo-btn--primary" onClick={() => onAction(OrderStatus.PROCESS)}>{t("orders.confirm")}</button>
+            </>
+          ) : order.orderStatus === OrderStatus.PROCESS ? (
+            <button type="button" className="bo-btn bo-btn--primary" onClick={() => onAction(OrderStatus.FINISH)}>{t("orders.received")}</button>
+          ) : canReorder ? (
+            <button type="button" className="bo-btn bo-btn--ghost" onClick={reorder}>{t("orders.reorder")}</button>
+          ) : null}
+        </div>
+      </footer>
+    </article>
+  );
 }

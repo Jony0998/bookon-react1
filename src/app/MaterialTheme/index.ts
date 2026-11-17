@@ -38,7 +38,8 @@ const light = {
 		MuiCssBaseline: {
 			styleOverrides: {
 				html: { height: '100%' },
-				body: { background: '#f4f6f8', height: '100%', minHeight: '100%' },
+				// Colours come from css/tokens.css so day/night mode applies everywhere
+				body: { background: 'var(--bg)', color: 'var(--ink)', height: '100%', minHeight: '100%' },
 			},
 		},
 	},

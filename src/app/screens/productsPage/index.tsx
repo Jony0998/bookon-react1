@@ -1,23 +1,15 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import ChosenProduct from "./ChosenProduct";
-import Products from "./Products";
-import "../../../css/products.css";
-import { CartItem } from "../../../lib/types/search";
-
-interface ProductsPageProps {
-  onAdd: (item: CartItem) => void;
-}
+import Catalog from "./Catalog";
+import BookDetail from "./BookDetail";
+import "../../../css/catalog.css";
 
 /** Mounted at /products/* (see App.tsx) */
-export default function ProductsPage(props: ProductsPageProps) {
-  const { onAdd } = props;
+export default function ProductsPage({ openLogin }: { openLogin: () => void }) {
   return (
-    <div className={"products-page"}>
-      <Routes>
-        <Route path=":productId" element={<ChosenProduct onAdd={onAdd} />} />
-        <Route index element={<Products onAdd={onAdd} />} />
-      </Routes>
-    </div>
+    <Routes>
+      <Route path=":productId" element={<BookDetail openLogin={openLogin} />} />
+      <Route index element={<Catalog />} />
+    </Routes>
   );
 }
