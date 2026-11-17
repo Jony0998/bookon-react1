@@ -1,8 +1,7 @@
 import {
   ProductCollection,
-  ProductSize,
+  ProductLanguage,
   ProductStatus,
-  ProductWeight,
 } from "../enums/product.enum";
 
 export interface Product {
@@ -10,10 +9,16 @@ export interface Product {
   productStatus: ProductStatus;
   productCollection: ProductCollection;
   productName: string;
+  productAuthor: string;
   productPrice: number;
+  /** sale price, always lower than productPrice when present */
+  productDiscountPrice?: number;
   productLeftCount: number;
-  productSize: ProductSize;
-  productVolume: ProductWeight;
+  productIsbn?: string;
+  productPublisher?: string;
+  productPublishYear?: number;
+  productPages?: number;
+  productLanguage: ProductLanguage;
   productDesc?: string;
   productImages: string[];
   productViews: number;

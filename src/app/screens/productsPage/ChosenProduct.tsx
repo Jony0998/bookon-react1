@@ -138,7 +138,15 @@ export default function ChosenProduct(props: ChosenProductsProps) {
               </Box>
             </Box>
             <Box className={"publisher-info"}>
-              <span className={"resto-name"}>Publisher: {restaurant?.memberNick || "BookOn"}</span>
+              {chosenProduct?.productAuthor && (
+                <span className={"resto-name"}>Author: {chosenProduct.productAuthor}</span>
+              )}
+              {chosenProduct?.productPublisher && (
+                <span className={"resto-name"}>
+                  Publisher: {chosenProduct.productPublisher}
+                  {chosenProduct.productPublishYear ? `, ${chosenProduct.productPublishYear}` : ""}
+                </span>
+              )}
               {restaurant?.memberPhone && (
                 <span className={"resto-name"}>Contact: {restaurant.memberPhone}</span>
               )}

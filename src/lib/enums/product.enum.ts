@@ -1,15 +1,9 @@
 // Must stay in sync with backend: src/libs/types/enums/product.enum.ts
-export enum ProductSize {
-    SMALL = "SMALL",
-    MEDIUM = "MEDIUM",
-    LARGE = "LARGE",
-    EXTRA_LARGE = "EXTRA_LARGE",
-}
-
-export enum ProductWeight {
-    LIGHT = "LIGHT",
-    MEDIUM = "MEDIUM",
-    HEAVY = "HEAVY",
+export enum ProductLanguage {
+    UZ = "UZ",
+    RU = "RU",
+    EN = "EN",
+    OTHER = "OTHER",
 }
 
 export enum ProductStatus {
