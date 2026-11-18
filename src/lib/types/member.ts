@@ -1,12 +1,13 @@
 import { MemberStatus, MemberType } from "../enums/member.enum";
 
-  
 export interface Member {
   _id: string;
   memberType: MemberType;
   memberStatus: MemberStatus;
   memberNick: string;
-  memberPhone: string;
+  memberPhone?: string;
+  memberEmail?: string;
+  memberEmailVerified?: boolean;
   memberPassword?: string;
   memberAddress?: string;
   memberDesc?: string;
@@ -16,27 +17,22 @@ export interface Member {
   updatedAt: Date;
 }
 
-export interface MemberInput {
-  memberType?: MemberType;
-  memberStatus?: MemberStatus;
+export interface SignupInput {
   memberNick: string;
-  memberPhone: string;
+  memberEmail: string;
   memberPassword: string;
-  memberAddress?: string;
-  memberDesc?: string;
-  memberImage?: string;
-  memberPoints?: number;
 }
 
+/** `login` is an email address or a username */
 export interface LoginInput {
-  memberNick: string;
+  login: string;
   memberPassword: string;
 }
 
 export interface MemberUpdateInput {
   memberNick?: string;
   memberPhone?: string;
-  memberPassword?: string;
+  memberEmail?: string;
   memberAddress?: string;
   memberDesc?: string;
   memberImage?: string | File;

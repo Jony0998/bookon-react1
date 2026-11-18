@@ -1,7 +1,7 @@
 
 import axios from "axios";
 import { serverApi } from "../../lib/config";
-import { LoginInput, Member, MemberInput, MemberUpdateInput } from "../../lib/types/member";
+import { LoginInput, Member, MemberUpdateInput, SignupInput } from "../../lib/types/member";
 
 class MemberService {
     private readonly path: string;
@@ -47,19 +47,36 @@ class MemberService {
    }
  }
 
- public async signup(input: MemberInput): Promise<Member> {
-  try {
-    const url = this.path + "/member/signup";
-   const result = await axios.post(url, input, {withCredentials: true});
-
+ /** Creates the account and signs in; `emailSent` tells whether a verify mail went out */
+ public async signup(input: SignupInput, lang: string): Promise<{ member: Member; emailSent: boolean }> {
+   const url = this.path + "/member/signup";
+   const result = await axios.post(url, { ...input, lang }, { withCredentials: true });
    const member: Member = result.data.member;
    localStorage.setItem("memberData", JSON.stringify(member));
+   return { member, emailSent: !!result.data.emailSent };
+ }
 
-   return member;
-  } catch(err) {
-       console.log("Error, signup:", err);
-       throw err;
-  }
+ public async getDetail(): Promise<Member> {
+   const result = await axios.get(`${this.path}/member/detail`, { withCredentials: true });
+   localStorage.setItem("memberData", JSON.stringify(result.data));
+   return result.data;
+ }
+
+ public async verifyEmail(token: string): Promise<void> {
+   await axios.post(`${this.path}/member/verify-email`, { token });
+ }
+
+ public async resendVerification(lang: string): Promise<{ emailSent?: boolean; alreadyVerified?: boolean }> {
+   const result = await axios.post(`${this.path}/member/resend-verification`, { lang }, { withCredentials: true });
+   return result.data;
+ }
+
+ public async forgotPassword(memberEmail: string, lang: string): Promise<void> {
+   await axios.post(`${this.path}/member/forgot-password`, { memberEmail, lang });
+ }
+
+ public async resetPassword(token: string, memberPassword: string): Promise<void> {
+   await axios.post(`${this.path}/member/reset-password`, { token, memberPassword });
  }
 
  public async login(input: LoginInput): Promise<Member> {
@@ -93,8 +110,10 @@ class MemberService {
   try {
      const formData = new FormData();
      formData.append("memberNick", input.memberNick || "");
-     formData.append("memberPhone", input.memberPhone || "");
      // Only send optional fields when present so they are not wiped
+     if (input.memberPhone !== undefined) formData.append("memberPhone", input.memberPhone);
+     if (input.memberEmail !== undefined) formData.append("memberEmail", input.memberEmail);
+     formData.append("lang", document.documentElement.lang || "uz");
      if (input.memberAddress !== undefined) formData.append("memberAddress", input.memberAddress);
      if (input.memberDesc !== undefined) formData.append("memberDesc", input.memberDesc);
      if (input.memberImage instanceof File) {

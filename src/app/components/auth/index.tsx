@@ -1,637 +1,216 @@
-import React, { useState } from "react";
-import { Backdrop, Fade, Modal, Box, Button, Stack, TextField, Typography, IconButton, InputAdornment } from "@mui/material";
-import styled from "styled-components";
-import { 
-  Login as LoginIcon, 
-  PersonAdd, 
-  Person, 
-  Phone, 
-  Lock, 
-  Close,
-  MenuBook 
-} from "@mui/icons-material";
-import { T } from "../../../lib/types/common";
-import { Messages } from "../../../lib/config";
-import { LoginInput, MemberInput } from "../../../lib/types/member";
-import MemberService from "../../services/MemberService";
-import { sweetErrorHandling } from "../../../lib/sweetAlert";
+import React, { FormEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import Dialog from "@mui/material/Dialog";
 import { useGlobals } from "../../hooks/useGlobals";
+import MemberService from "../../services/MemberService";
+import { apiErrorText } from "../../../lib/apiError";
+import { BrandWordmark, GirihMark, GirihPattern } from "../ui/Girih";
+import { CheckIcon, CloseIcon } from "../ui/Icons";
+import "../../../css/account.css";
 
-/** Centered modal with a blurred, dimmed backdrop */
-const modalSx = { display: "flex", alignItems: "center", justifyContent: "center" } as const;
-const modalSlotProps = {
-  backdrop: {
-    timeout: 500,
-    sx: { backgroundColor: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(5px)" },
-  },
-};
+export type AuthMode = "login" | "signup";
+type View = AuthMode | "forgot" | "forgotSent" | "welcome";
 
-const AuthModalWrapper = styled(Box)`
-  position: relative;
-  width: 900px;
-  max-width: 95vw;
-  max-height: 90vh;
-  background: #ffffff;
-  border-radius: 30px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    width: 100%;
-    max-width: 100vw;
-    max-height: 95vh;
-    border-radius: 20px 20px 0 0;
-  }
-`;
-
-const AuthImageSection = styled(Box)`
-  width: 45%;
-  min-height: 500px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-    z-index: 0;
-  }
-  
-  > * {
-    position: relative;
-    z-index: 1;
-  }
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    min-height: 180px;
-    padding: 25px 20px;
-    
-    .MuiTypography-h3 {
-      font-size: 24px !important;
-    }
-    
-    .MuiSvgIcon-root {
-      font-size: 60px !important;
-    }
-  }
-`;
-
-const AuthFormSection = styled(Box)`
-  width: 55%;
-  padding: 50px 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: #ffffff;
-  max-height: 90vh;
-  overflow-y: auto;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    padding: 30px 20px;
-    max-height: 70vh;
-  }
-  
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(102, 126, 234, 0.3);
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-`;
-
-const CloseButton = styled(IconButton)`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: rotate(90deg);
-  }
-`;
-
-const TitleWrapper = styled(Box)`
-  text-align: center;
-  margin-bottom: 40px;
-`;
-
-const StyledTextField = styled(TextField)`
-  width: 100%;
-  margin-bottom: 20px;
-  
-  .MuiOutlinedInput-root {
-    border-radius: 12px;
-    background: #f8f8ff;
-    transition: all 0.3s ease;
-    padding-left: 0;
-    
-    &:hover {
-      background: #ffffff;
-    }
-    
-    &.Mui-focused {
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .MuiInputAdornment-root {
-      margin-left: 14px;
-      margin-right: 0;
-    }
-    
-    .MuiInputBase-input {
-      padding-left: 12px;
-    }
-    
-    fieldset {
-      border-color: rgba(102, 126, 234, 0.2);
-      border-width: 2px;
-    }
-    
-    &:hover fieldset {
-      border-color: rgba(102, 126, 234, 0.4);
-    }
-    
-    &.Mui-focused fieldset {
-      border-color: #667eea;
-    }
-  }
-  
-  .MuiInputLabel-root {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    
-    &.Mui-focused {
-      color: #667eea;
-    }
-  }
-  
-  .MuiFormHelperText-root {
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    margin-top: 6px;
-  }
-`;
-
-const SubmitButton = styled(Button)`
-  width: 100%;
-  height: 50px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  text-transform: none;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-  transition: all 0.3s ease;
-  margin-top: 10px;
-  
-  &:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-interface AuthenticationModalProps {
-  signupOpen: boolean;
-  loginOpen: boolean;
-  handleSignupClose: () => void;
-  handleLoginClose: () => void;
+interface AuthModalProps {
+  mode: AuthMode | null;
+  onClose: () => void;
 }
 
-export default function AuthenticationModal(props: AuthenticationModalProps) {
-  const { signupOpen, loginOpen, handleSignupClose, handleLoginClose } = props;
-  const [memberNick, setMemberNick] = useState<string>("");
-  const [memberPhone, setMemberPhone] = useState<string>("");
-  const [memberPassword, setMemberPassword] = useState<string>("");
-  const {setAuthMember} = useGlobals();
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const NICK_RE = /^[A-Za-z0-9_]{3,30}$/;
 
-  /** HANDLERS **/
-  
-  const handleUsername = (e: T) => {
-    setMemberNick(e.target.value);
+/** Sign in, sign up and "forgot password" in one themed dialog */
+export default function AuthModal({ mode, onClose }: AuthModalProps) {
+  const { t, i18n } = useTranslation();
+  const { setAuthMember } = useGlobals();
+  const [view, setView] = useState<View>("login");
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [nick, setNick] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [welcome, setWelcome] = useState({ nick: "", email: "", emailSent: false });
+
+  // Each opening starts on the requested tab with a clean form
+  useEffect(() => {
+    if (!mode) return;
+    setView(mode);
+    setError("");
+    setPassword("");
+    setShowPassword(false);
+  }, [mode]);
+
+  const go = (next: View) => {
+    setView(next);
+    setError("");
   };
 
-    const handlePhone = (e: T) => {
-    setMemberPhone(e.target.value);
-  };
-
-    const handlePassword = (e: T) => {
-    setMemberPassword(e.target.value);
-  };
-
-  const handlePasswordKeyDown = (e: T) => {
-    if(e.key === "Enter" && signupOpen) {
-      handleSignupRequest().then();
-    } else if(e.key ==="Enter" && loginOpen) {
-      handleLoginRequest().then();
-    }
-  }
-
-
-  // Validation functions
-  const validateUsername = (username: string): string | null => {
-    if (username.trim() === "") {
-      return Messages.error3;
-    }
-    if (username.length < 3) {
-      return Messages.error6;
-    }
-    // Username can only contain letters, numbers, and underscores
-    const usernameRegex = /^[a-zA-Z0-9_]+$/;
-    if (!usernameRegex.test(username)) {
-      return Messages.error7;
-    }
-    return null;
-  };
-
-  const validatePhone = (phone: string): string | null => {
-    if (phone.trim() === "") {
-      return Messages.error3;
-    }
-    // Remove spaces, dashes, and plus signs for validation
-    const cleanPhone = phone.replace(/[\s\-+]/g, "");
-    // Check if phone contains only digits
-    if (!/^\d+$/.test(cleanPhone)) {
-      return Messages.error8;
-    }
-    if (cleanPhone.length < 9) {
-      return Messages.error9;
-    }
-    return null;
-  };
-
-  const validatePassword = (password: string): string | null => {
-    if (password === "") {
-      return Messages.error3;
-    }
-    if (password.length < 6) {
-      return Messages.error10;
-    }
-    return null;
-  };
-
-  const handleSignupRequest = async () => {
+  const run = async (task: () => Promise<void>) => {
+    setBusy(true);
+    setError("");
     try {
-      // Validate all fields before sending request
-      const usernameError = validateUsername(memberNick);
-      if (usernameError) {
-        throw new Error(usernameError);
-      }
-
-      const phoneError = validatePhone(memberPhone);
-      if (phoneError) {
-        throw new Error(phoneError);
-      }
-
-      const passwordError = validatePassword(memberPassword);
-      if (passwordError) {
-        throw new Error(passwordError);
-      }
-
-      // Clean phone number (remove spaces, dashes, plus signs)
-      const cleanPhone = memberPhone.replace(/[\s\-+]/g, "");
-
-      const signupInput: MemberInput = {
-        memberNick: memberNick.trim(),
-        memberPhone: cleanPhone,
-        memberPassword: memberPassword,
-      };
-
-      const member = new MemberService();
-      const result = await member.signup(signupInput);
-      
-      // Only close modal and save user if signup is successful
-      setAuthMember(result);
-      handleSignupClose();
-      
-      // Reset form fields after successful signup
-      setMemberNick("");
-      setMemberPhone("");
-      setMemberPassword("");
-    } catch(err: any) {
-      console.log(err);
-      // Don't close modal on error - let user see the error and fix it
-      const errorMessage = err?.response?.data?.message || err?.message || Messages.error1;
-      sweetErrorHandling(errorMessage).then();
+      await task();
+    } catch (err) {
+      setError(apiErrorText(err, t));
+    } finally {
+      setBusy(false);
     }
   };
 
-  const handleLoginRequest = async () => {
-    try {
-      const isFulfill = memberNick !== "" && memberPassword !== "";
-      if(!isFulfill) throw new Error(Messages.error3);
-
-      const loginInput: LoginInput = {
-        memberNick: memberNick.trim(),
-        memberPassword: memberPassword,
-      };
-
-      const member = new MemberService();
-      const result = await member.login(loginInput);
-       
-      // Only close modal and save user if login is successful
-      setAuthMember(result);
-      handleLoginClose();
-      
-      // Reset form fields after successful login
-      setMemberNick("");
-      setMemberPassword("");
-    } catch(err: any) {
-      console.log(err);
-      // Don't close modal on error - let user see the error and fix it
-      const errorMessage = err?.response?.data?.message || err?.message || Messages.error1;
-      sweetErrorHandling(errorMessage).then();
-    }
+  const submitLogin = (e: FormEvent) => {
+    e.preventDefault();
+    if (!login.trim() || !password) return setError(t("auth.required"));
+    run(async () => {
+      const member = await new MemberService().login({ login: login.trim(), memberPassword: password });
+      setAuthMember(member);
+      onClose();
+    });
   };
 
+  const submitSignup = (e: FormEvent) => {
+    e.preventDefault();
+    if (!NICK_RE.test(nick.trim())) return setError(t("errors.invalidNick"));
+    if (!EMAIL_RE.test(email.trim())) return setError(t("errors.invalidEmail"));
+    if (password.length < 8) return setError(t("errors.weakPassword"));
+    run(async () => {
+      const { member, emailSent } = await new MemberService().signup(
+        { memberNick: nick.trim(), memberEmail: email.trim(), memberPassword: password },
+        i18n.language
+      );
+      setAuthMember(member);
+      setWelcome({ nick: member.memberNick, email: member.memberEmail ?? "", emailSent });
+      go("welcome");
+    });
+  };
 
+  const submitForgot = (e: FormEvent) => {
+    e.preventDefault();
+    if (!EMAIL_RE.test(email.trim())) return setError(t("errors.invalidEmail"));
+    run(async () => {
+      await new MemberService().forgotPassword(email.trim(), i18n.language);
+      go("forgotSent");
+    });
+  };
+
+  const passwordField = (autoComplete: string, hint?: string) => (
+    <label className="bo-field">
+      <span>{t("auth.password")}</span>
+      <span className="bo-password">
+        <input
+          className="bo-input"
+          type={showPassword ? "text" : "password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete={autoComplete}
+          maxLength={72}
+          required
+        />
+        <button type="button" onClick={() => setShowPassword((v) => !v)} aria-pressed={showPassword}>
+          {showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
+        </button>
+      </span>
+      {hint ? <small className="bo-muted">{hint}</small> : null}
+    </label>
+  );
+
+  // Typing again hides the previous error
+  const clearError = () => {
+    if (error) setError("");
+  };
+
+  const errorLine = error ? <p className="bo-alert" role="alert">{error}</p> : null;
 
   return (
-    <div>
-      {/* Signup Modal */}
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        sx={modalSx}
-        open={signupOpen}
-        onClose={handleSignupClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={modalSlotProps}
-      >
-        <Fade in={signupOpen}>
-          <AuthModalWrapper sx={{ outline: "none" }}>
-            <CloseButton onClick={handleSignupClose} size="small">
-              <Close />
-            </CloseButton>
-            
-            <AuthImageSection>
-              <MenuBook sx={{ fontSize: 100, color: '#fff', mb: 3, opacity: 0.9 }} />
-              <Typography 
-                variant="h3" 
-                sx={{ 
-                  color: '#fff', 
-                  fontWeight: 700, 
-                  mb: 2,
-                  fontFamily: "'Georgia', 'Times New Roman', serif",
-                  textAlign: 'center'
-                }}
-              >
-                Join BookOn
-              </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  color: 'rgba(255, 255, 255, 0.9)', 
-                  textAlign: 'center',
-                  fontSize: '16px',
-                  maxWidth: '300px'
-                }}
-              >
-                Start your reading journey today. Discover thousands of books and expand your knowledge.
-              </Typography>
-            </AuthImageSection>
+    <Dialog
+      open={!!mode}
+      onClose={busy ? undefined : onClose}
+      maxWidth={false}
+      slotProps={{
+        paper: { sx: { borderRadius: "28px", bgcolor: "var(--surface)", color: "var(--ink)", m: 2, width: "min(880px, calc(100vw - 32px))", maxHeight: "calc(100vh - 32px)", overflow: "hidden" } },
+        backdrop: { sx: { backgroundColor: "var(--overlay)", backdropFilter: "blur(4px)" } },
+      }}
+      aria-labelledby="bo-auth-title"
+    >
+      <div className="bo-auth">
+        <aside className="bo-auth__side" aria-hidden="true">
+          <GirihPattern className="bo-girih-bg" style={{ inset: 0, opacity: 0.18, color: "var(--gold)" }} />
+          <div className="bo-auth__brand"><GirihMark size={34} /><BrandWordmark size={28} /></div>
+          <div>
+            <p className="bo-auth__side-title">{t("auth.sideTitle")}</p>
+            <p className="bo-auth__side-text">{t("auth.sideText")}</p>
+          </div>
+        </aside>
 
-            <AuthFormSection>
-              <TitleWrapper>
-                <Typography 
-                  variant="h4" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    color: '#1a1a2e',
-                    mb: 1,
-                    fontFamily: "'Georgia', 'Times New Roman', serif"
-                  }}
-                >
-                  Create Account
-                </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ color: '#666', fontSize: '14px' }}
-                >
-                  Sign up to get started
-                </Typography>
-              </TitleWrapper>
+        <div className="bo-auth__main">
+          <button type="button" className="bo-icon-btn bo-auth__close" aria-label={t("common.close")} onClick={onClose} disabled={busy}>
+            <CloseIcon />
+          </button>
 
-              <StyledTextField
-                id="signup-username"
-                label="Username"
-                variant="outlined"
-                value={memberNick}
-                onChange={handleUsername}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Person sx={{ color: '#667eea' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                placeholder="Enter your username"
-                helperText="3+ characters, letters, numbers, and underscores only"
-                fullWidth
-              />
-
-              <StyledTextField
-                id="signup-phone"
-                label="Phone Number"
-                variant="outlined"
-                value={memberPhone}
-                onChange={handlePhone}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Phone sx={{ color: '#667eea' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                placeholder="Enter your phone number"
-                helperText="9+ digits"
-                fullWidth
-              />
-
-              <StyledTextField
-                id="signup-password"
-                label="Password"
-                type="password"
-                variant="outlined"
-                value={memberPassword}
-                onChange={handlePassword}
-                onKeyDown={handlePasswordKeyDown}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock sx={{ color: '#667eea' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                placeholder="Enter your password"
-                helperText="6+ characters"
-                fullWidth
-              />
-
-              <SubmitButton
-                variant="contained"
-                onClick={handleSignupRequest}
-                startIcon={<PersonAdd />}
-              >
-                Create Account
-              </SubmitButton>
-            </AuthFormSection>
-          </AuthModalWrapper>
-        </Fade>
-      </Modal>
-
-      {/* Login Modal */}
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        sx={modalSx}
-        open={loginOpen}
-        onClose={handleLoginClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={modalSlotProps}
-      >
-        <Fade in={loginOpen}>
-          <AuthModalWrapper sx={{ outline: "none" }}>
-            <CloseButton onClick={handleLoginClose} size="small">
-              <Close />
-            </CloseButton>
-            
-            <AuthImageSection>
-              <MenuBook sx={{ fontSize: 100, color: '#fff', mb: 3, opacity: 0.9 }} />
-              <Typography 
-                variant="h3" 
-                sx={{ 
-                  color: '#fff', 
-                  fontWeight: 700, 
-                  mb: 2,
-                  fontFamily: "'Georgia', 'Times New Roman', serif",
-                  textAlign: 'center'
-                }}
-              >
-                Welcome Back
-              </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  color: 'rgba(255, 255, 255, 0.9)', 
-                  textAlign: 'center',
-                  fontSize: '16px',
-                  maxWidth: '300px'
-                }}
-              >
-                Continue your reading adventure. Access your favorite books and discover new ones.
-              </Typography>
-            </AuthImageSection>
-
-            <AuthFormSection>
-              <TitleWrapper>
-                <Typography 
-                  variant="h4" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    color: '#1a1a2e',
-                    mb: 1,
-                    fontFamily: "'Georgia', 'Times New Roman', serif"
-                  }}
-                >
-                  Sign In
-                </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ color: '#666', fontSize: '14px' }}
-                >
-                  Enter your credentials to continue
-                </Typography>
-              </TitleWrapper>
-
-              <StyledTextField
-                id="login-username"
-                label="Username"
-                variant="outlined"
-                value={memberNick}
-                onChange={handleUsername}
-                onKeyDown={handlePasswordKeyDown}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Person sx={{ color: '#667eea' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                placeholder="Enter your username"
-                fullWidth
-                sx={{ mb: 3 }}
-              />
-
-              <StyledTextField
-                id="login-password"
-                label="Password"
-                type="password"
-                variant="outlined"
-                value={memberPassword}
-                onChange={handlePassword}
-                onKeyDown={handlePasswordKeyDown}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock sx={{ color: '#667eea' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                placeholder="Enter your password"
-                fullWidth
-                sx={{ mb: 3 }}
-              />
-
-              <SubmitButton
-                variant="contained"
-                onClick={handleLoginRequest}
-                startIcon={<LoginIcon />}
-              >
-                Sign In
-              </SubmitButton>
-            </AuthFormSection>
-          </AuthModalWrapper>
-        </Fade>
-      </Modal>
-    </div>
+          {view === "login" ? (
+            <form onSubmit={submitLogin} noValidate className="bo-auth__form" onInput={clearError}>
+              <h2 id="bo-auth-title">{t("auth.loginTitle")}</h2>
+              <p className="bo-muted">{t("auth.loginSub")}</p>
+              <label className="bo-field">
+                <span>{t("auth.login")}</span>
+                <input className="bo-input" value={login} onChange={(e) => setLogin(e.target.value)} autoComplete="username" autoFocus maxLength={254} required />
+              </label>
+              {passwordField("current-password")}
+              <button type="button" className="bo-auth__link bo-auth__forgot" onClick={() => { setEmail(login.includes("@") ? login.trim() : email); go("forgot"); }}>
+                {t("auth.forgot")}
+              </button>
+              {errorLine}
+              <button type="submit" className="bo-btn bo-btn--primary bo-btn--lg" disabled={busy}>{t("auth.submitLogin")}</button>
+              <p className="bo-auth__switch">{t("auth.noAccount")} <button type="button" className="bo-auth__link" onClick={() => go("signup")}>{t("auth.toSignup")}</button></p>
+            </form>
+          ) : view === "signup" ? (
+            <form onSubmit={submitSignup} noValidate className="bo-auth__form" onInput={clearError}>
+              <h2 id="bo-auth-title">{t("auth.signupTitle")}</h2>
+              <p className="bo-muted">{t("auth.signupSub")}</p>
+              <label className="bo-field">
+                <span>{t("auth.nick")}</span>
+                <input className="bo-input" value={nick} onChange={(e) => setNick(e.target.value)} autoComplete="username" autoFocus maxLength={30} required />
+                <small className="bo-muted">{t("auth.nickHint")}</small>
+              </label>
+              <label className="bo-field">
+                <span>{t("auth.email")}</span>
+                <input className="bo-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" maxLength={254} required />
+              </label>
+              {passwordField("new-password", t("auth.passwordHint"))}
+              {errorLine}
+              <button type="submit" className="bo-btn bo-btn--primary bo-btn--lg" disabled={busy}>{t("auth.submitSignup")}</button>
+              <p className="bo-auth__switch">{t("auth.haveAccount")} <button type="button" className="bo-auth__link" onClick={() => go("login")}>{t("auth.toLogin")}</button></p>
+            </form>
+          ) : view === "forgot" ? (
+            <form onSubmit={submitForgot} noValidate className="bo-auth__form" onInput={clearError}>
+              <h2 id="bo-auth-title">{t("auth.forgotTitle")}</h2>
+              <p className="bo-muted">{t("auth.forgotSub")}</p>
+              <label className="bo-field">
+                <span>{t("auth.email")}</span>
+                <input className="bo-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" autoFocus maxLength={254} required />
+              </label>
+              {errorLine}
+              <button type="submit" className="bo-btn bo-btn--primary bo-btn--lg" disabled={busy}>{t("auth.forgotSubmit")}</button>
+              <button type="button" className="bo-auth__link" onClick={() => go("login")}>{t("auth.back")}</button>
+            </form>
+          ) : view === "forgotSent" ? (
+            <div className="bo-auth__form bo-auth__done" role="status">
+              <span className="bo-auth__check"><CheckIcon size={30} /></span>
+              <h2 id="bo-auth-title">{t("auth.forgotTitle")}</h2>
+              <p className="bo-muted">{t("auth.forgotSent")}</p>
+              <button type="button" className="bo-btn bo-btn--dark" onClick={() => go("login")}>{t("auth.back")}</button>
+            </div>
+          ) : (
+            <div className="bo-auth__form bo-auth__done" role="status">
+              <span className="bo-auth__check"><CheckIcon size={30} /></span>
+              <h2 id="bo-auth-title">{t("auth.welcome", { nick: welcome.nick })}</h2>
+              {welcome.emailSent ? <p className="bo-muted">{t("auth.checkEmail", { email: welcome.email })}</p> : null}
+              <button type="button" className="bo-btn bo-btn--primary bo-btn--lg" onClick={onClose} autoFocus>{t("cart.browse")}</button>
+            </div>
+          )}
+        </div>
+      </div>
+    </Dialog>
   );
 }

@@ -7,6 +7,7 @@ import { serverApi } from "../../../lib/config";
 import { MemberType } from "../../../lib/enums/member.enum";
 import { BoxIcon, CheckIcon, HeartIcon, HelpIcon } from "../../components/ui/Icons";
 import { formatDate } from "../../../lib/format";
+import { apiErrorText } from "../../../lib/apiError";
 import "../../../css/account.css";
 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -16,7 +17,8 @@ export default function UserPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { authMember, setAuthMember } = useGlobals();
-  const [form, setForm] = useState({ memberNick: "", memberPhone: "", memberAddress: "", memberDesc: "" });
+  const [form, setForm] = useState({ memberNick: "", memberEmail: "", memberPhone: "", memberAddress: "", memberDesc: "" });
+  const [resend, setResend] = useState<{ busy: boolean; text: string }>({ busy: false, text: "" });
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [status, setStatus] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
@@ -29,11 +31,19 @@ export default function UserPage() {
     }
     setForm({
       memberNick: authMember.memberNick ?? "",
+      memberEmail: authMember.memberEmail ?? "",
       memberPhone: authMember.memberPhone ?? "",
       memberAddress: authMember.memberAddress ?? "",
       memberDesc: authMember.memberDesc ?? "",
     });
   }, [authMember, navigate]);
+
+  // The cached member may be stale (e.g. the email was just confirmed in another tab)
+  useEffect(() => {
+    if (!authMember) return;
+    new MemberService().getDetail().then(setAuthMember).catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Free the object URL of a replaced preview
   useEffect(() => () => {
@@ -61,9 +71,20 @@ export default function UserPage() {
     setStatus(null);
   };
 
+  const resendVerification = async () => {
+    setResend({ busy: true, text: "" });
+    try {
+      const result = await new MemberService().resendVerification(i18n.language);
+      if (result.alreadyVerified) setAuthMember(await new MemberService().getDetail());
+      setResend({ busy: false, text: result.emailSent || result.alreadyVerified ? t("verify.resent") : t("verify.notSent") });
+    } catch (err) {
+      setResend({ busy: false, text: apiErrorText(err, t) });
+    }
+  };
+
   const save = async (e: FormEvent) => {
     e.preventDefault();
-    if (!form.memberNick.trim() || !form.memberPhone.trim()) {
+    if (!form.memberNick.trim()) {
       setStatus({ kind: "error", text: t("profile.required") });
       return;
     }
@@ -71,6 +92,7 @@ export default function UserPage() {
     try {
       const member = await new MemberService().updateMember({
         memberNick: form.memberNick.trim(),
+        memberEmail: form.memberEmail.trim(),
         memberPhone: form.memberPhone.trim(),
         memberAddress: form.memberAddress.trim(),
         memberDesc: form.memberDesc.trim(),
@@ -80,8 +102,8 @@ export default function UserPage() {
       setImage(null);
       setPreview("");
       setStatus({ kind: "ok", text: t("profile.saved") });
-    } catch (err: any) {
-      setStatus({ kind: "error", text: err?.response?.data?.message || t("orders.failed") });
+    } catch (err) {
+      setStatus({ kind: "error", text: apiErrorText(err, t) });
     } finally {
       setSaving(false);
     }
@@ -128,9 +150,26 @@ export default function UserPage() {
               <span>{t("profile.nick")} *</span>
               <input className="bo-input" value={form.memberNick} onChange={field("memberNick")} maxLength={40} required autoComplete="username" />
             </label>
+            <div className="bo-field bo-field--wide">
+              <label htmlFor="profile-email">{t("profile.email")}</label>
+              <input id="profile-email" className="bo-input" type="email" value={form.memberEmail} onChange={field("memberEmail")} maxLength={254} autoComplete="email" />
+              <span className="bo-email-status" aria-live="polite">
+                {!authMember.memberEmail ? (
+                  <span className="is-warn">{t("verify.addEmail")}</span>
+                ) : authMember.memberEmailVerified ? (
+                  <span className="is-ok"><CheckIcon size={14} />{t("verify.verified")}</span>
+                ) : (
+                  <>
+                    <span className="is-warn">{t("verify.notVerified")}</span>
+                    <button type="button" onClick={resendVerification} disabled={resend.busy}>{t("verify.resend")}</button>
+                    {resend.text ? <span className="bo-muted">{resend.text}</span> : null}
+                  </>
+                )}
+              </span>
+            </div>
             <label className="bo-field">
-              <span>{t("profile.phone")} *</span>
-              <input className="bo-input" value={form.memberPhone} onChange={field("memberPhone")} maxLength={20} inputMode="tel" required autoComplete="tel" />
+              <span>{t("profile.phone")}</span>
+              <input className="bo-input" value={form.memberPhone} onChange={field("memberPhone")} maxLength={20} inputMode="tel" autoComplete="tel" />
             </label>
             <label className="bo-field">
               <span>{t("profile.address")}</span>

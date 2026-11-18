@@ -180,6 +180,87 @@
 .bo-contact dd { margin: 4px 0 0; font-size: 18px; font-weight: 700; }
 .bo-contact a { color: var(--accent); text-decoration: none; }
 
+/* ---------- Auth dialog ---------- */
+.bo-auth { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); min-height: 560px; font-family: var(--font-ui); color: var(--ink); }
+.bo-auth__side {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 36px;
+  background: radial-gradient(420px 320px at 30% 0%, rgba(242, 181, 58, 0.28), transparent 70%), #12111a;
+  color: #f3eee4;
+}
+.bo-auth__brand { position: relative; display: flex; align-items: center; gap: 10px; }
+.bo-auth__brand .bo-display { color: #f3eee4 !important; }
+.bo-auth__side > div:last-child { position: relative; }
+.bo-auth__side-title { margin: 0 0 12px; font-family: var(--font-display); font-size: 30px; line-height: 1.15; font-weight: 600; }
+.bo-auth__side-text { margin: 0; color: #b3abbe; line-height: 1.6; }
+.bo-auth__main { position: relative; padding: 40px 36px 32px; overflow-y: auto; }
+/* doubled class: must beat .bo-icon-btn { position: relative } whatever the CSS load order */
+.bo-auth__close.bo-auth__close { position: absolute; top: 16px; right: 16px; z-index: 1; }
+.bo-auth__form { display: flex; flex-direction: column; gap: 16px; }
+.bo-auth__form h2 { margin: 0; font-family: var(--font-display); font-size: 32px; font-weight: 600; letter-spacing: -0.02em; padding-right: 48px; }
+.bo-auth__form > p.bo-muted { margin: -8px 0 4px; }
+.bo-auth__form .bo-field small { font-weight: 500; }
+.bo-auth__link {
+  align-self: flex-start;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.bo-auth__link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.bo-auth__forgot { margin-top: -8px; font-size: 14px; }
+.bo-auth__switch { margin: 0; text-align: center; color: var(--ink2); }
+.bo-auth__done { align-items: center; text-align: center; justify-content: center; min-height: 100%; padding-top: 48px; }
+.bo-auth__check {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  color: var(--ok);
+}
+.bo-password { position: relative; display: block; }
+.bo-password .bo-input { padding-right: 104px; }
+.bo-password button {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--ink2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.bo-reset { width: min(440px, 100%); text-align: left; }
+.bo-email-status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; }
+.bo-email-status .is-ok { color: var(--ok); display: inline-flex; align-items: center; gap: 4px; }
+.bo-email-status .is-warn { color: var(--gold); }
+.bo-email-status button { min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+.bo-email-status button:hover { border-color: var(--accent); }
+
+@media (max-width: 760px) {
+  .bo-auth { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .bo-auth__side { display: none; }
+  .bo-auth__main { padding: 28px 20px 24px; }
+  .bo-auth__form h2 { font-size: 26px; }
+}
+
 /* ---------- Confirm dialog ---------- */
 .bo-confirm { padding: 28px; font-family: var(--font-ui); display: flex; flex-direction: column; gap: 22px; }
 .bo-confirm p { margin: 0; font-size: 17px; line-height: 1.55; font-weight: 600; }

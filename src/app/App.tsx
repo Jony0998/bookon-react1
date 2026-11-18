@@ -1,12 +1,10 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import HomePage from "./screens/homePage";
 import Header from "./components/shell/Header";
 import Footer from "./components/shell/Footer";
 import CartDrawer from "./components/shell/CartDrawer";
-import AuthenticationModal from "./components/auth";
-import { sweetErrorHandling } from "../lib/sweetAlert";
+import AuthModal, { AuthMode } from "./components/auth";
 import MemberService from "./services/MemberService";
 import { useGlobals } from "./hooks/useGlobals";
 
@@ -17,37 +15,27 @@ const UsersPage = lazy(() => import("./screens/userPage"));
 const OtherMemberPage = lazy(() => import("./screens/otherMemberPage"));
 const HelpPage = lazy(() => import("./screens/helpPage"));
 const WishlistPage = lazy(() => import("./screens/wishlistPage"));
+const VerifyEmailPage = lazy(() => import("./screens/authPages/VerifyEmail"));
+const ResetPasswordPage = lazy(() => import("./screens/authPages/ResetPassword"));
 const NotFoundPage = lazy(() => import("./screens/notFoundPage"));
 
 function App() {
-  const { t } = useTranslation();
   const location = useLocation();
   const { setAuthMember } = useGlobals();
-  const [signupOpen, setSignupOpen] = useState<boolean>(false);
-  const [loginOpen, setLoginOpen] = useState<boolean>(false);
+  const [authMode, setAuthMode] = useState<AuthMode | null>(null);
 
   // New page: start at the top (the browser keeps the old scroll position otherwise)
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  const openLogin = () => {
-    setSignupOpen(false);
-    setLoginOpen(true);
-  };
-  const openSignup = () => {
-    setLoginOpen(false);
-    setSignupOpen(true);
-  };
+  const openLogin = () => setAuthMode("login");
+  const openSignup = () => setAuthMode("signup");
 
+  // MemberService.logout clears local state even when the request fails
   const logout = async () => {
-    try {
-      await new MemberService().logout();
-      setAuthMember(null);
-    } catch (err) {
-      console.log(err);
-      sweetErrorHandling(new Error(t("common.loadError")));
-    }
+    await new MemberService().logout();
+    setAuthMember(null);
   };
 
   return (
@@ -63,19 +51,15 @@ function App() {
           <Route path="/wishlist" element={<WishlistPage openLogin={openLogin} />} />
           <Route path="/other-member-page/:memberId" element={<OtherMemberPage />} />
           <Route path="/help/*" element={<HelpPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage openLogin={openLogin} />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
 
       <Footer />
       <CartDrawer openLogin={openLogin} />
-
-      <AuthenticationModal
-        signupOpen={signupOpen}
-        loginOpen={loginOpen}
-        handleLoginClose={() => setLoginOpen(false)}
-        handleSignupClose={() => setSignupOpen(false)}
-      />
+      <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />
     </div>
   );
 }
