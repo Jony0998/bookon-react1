@@ -19,6 +19,8 @@ const KNOWN: Record<string, string> = {
   "Phone must be 7-15 digits, optionally starting with +!": "errors.invalidPhone",
   "Only jpg, jpeg, png and webp images up to 5MB are allowed!": "errors.badImage",
   "Wrong password!": "errors.wrongPassword",
+  "Not enough copies in stock!": "errors.outOfStock",
+  "Please enter a delivery address (5-200 characters)!": "errors.invalidAddress",
 };
 
 export const apiErrorText = (err: unknown, t: TFunction): string => {

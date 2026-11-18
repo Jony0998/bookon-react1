@@ -25,6 +25,9 @@ export interface Order {
     orderDelivery: number;
     orderStatus: OrderStatus;
     memberId: string;
+    orderPhone?: string;
+    orderAddress?: string;
+    orderNote?: string;
     createdAt: Date;
     updatedAt: Date;
     /** from aggregation */

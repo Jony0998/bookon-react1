@@ -99,6 +99,9 @@
 .bo-order__cover { display: block; }
 .bo-order__cover .bo-cover { border-radius: 2px 6px 6px 2px; box-shadow: none; }
 .bo-order__name { font-weight: 700; overflow-wrap: anywhere; }
+.bo-order__delivery { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; background: var(--surface2); font-size: 14px; }
+.bo-order__delivery svg { color: var(--accent); flex: none; }
+.bo-order__delivery em { color: var(--ink2); }
 .bo-order__foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px dashed var(--line); }
 .bo-order__foot dl { margin: 0; display: flex; flex-wrap: wrap; gap: 24px; }
 .bo-order__foot dl div { display: flex; flex-direction: column; gap: 2px; }

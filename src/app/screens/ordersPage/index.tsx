@@ -231,6 +231,14 @@ function OrderCard({ order, lang, onAction }: { order: Order; lang: string; onAc
         })}
       </ul>
 
+      {order.orderAddress || order.orderPhone ? (
+        <p className="bo-order__delivery">
+          <TruckIcon size={16} />
+          <span>{[order.orderAddress, order.orderPhone].filter(Boolean).join(" · ")}</span>
+          {order.orderNote ? <em>“{order.orderNote}”</em> : null}
+        </p>
+      ) : null}
+
       <footer className="bo-order__foot">
         <dl>
           <div><dt>{t("orders.books")}</dt><dd>{formatPrice(order.orderTotal - order.orderDelivery)}</dd></div>
@@ -238,11 +246,9 @@ function OrderCard({ order, lang, onAction }: { order: Order; lang: string; onAc
           <div className="is-total"><dt>{t("orders.total")}</dt><dd>{formatPrice(order.orderTotal)}</dd></div>
         </dl>
         <div className="bo-order__actions">
+          {/* Confirming is the library's job now; the reader can only cancel while pending */}
           {order.orderStatus === OrderStatus.PAUSE ? (
-            <>
-              <button type="button" className="bo-btn bo-btn--ghost" onClick={() => onAction(OrderStatus.DELETE)}>{t("orders.cancel")}</button>
-              <button type="button" className="bo-btn bo-btn--primary" onClick={() => onAction(OrderStatus.PROCESS)}>{t("orders.confirm")}</button>
-            </>
+            <button type="button" className="bo-btn bo-btn--ghost" onClick={() => onAction(OrderStatus.DELETE)}>{t("orders.cancel")}</button>
           ) : order.orderStatus === OrderStatus.PROCESS ? (
             <button type="button" className="bo-btn bo-btn--primary" onClick={() => onAction(OrderStatus.FINISH)}>{t("orders.received")}</button>
           ) : canReorder ? (

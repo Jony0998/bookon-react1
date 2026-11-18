@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Drawer from "@mui/material/Drawer";
 import { useCart } from "../../context/CartContext";
 import { useGlobals } from "../../hooks/useGlobals";
-import OrderService from "../../services/OrderService";
-import { sweetErrorHandling } from "../../../lib/sweetAlert";
 import { FREE_SHIPPING_FROM, formatPrice, shippingFor } from "../../../lib/format";
 import BookCover from "../ui/BookCover";
 import { CloseIcon, MinusIcon, PlusIcon, TrashIcon, TruckIcon } from "../ui/Icons";
@@ -14,33 +12,22 @@ import { CloseIcon, MinusIcon, PlusIcon, TrashIcon, TruckIcon } from "../ui/Icon
 export default function CartDrawer({ openLogin }: { openLogin: () => void }) {
   const { t } = useTranslation();
   const { cartItems, isOpen, closeCart, onAdd, onRemove, onDelete, onDeleteAll } = useCart();
-  const { authMember, setOrderBuilder } = useGlobals();
+  const { authMember } = useGlobals();
   const navigate = useNavigate();
-  const [placing, setPlacing] = useState(false);
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = shippingFor(subtotal);
   const left = Math.max(0, FREE_SHIPPING_FROM - subtotal);
   const progress = Math.min(100, (subtotal / FREE_SHIPPING_FROM) * 100);
 
-  const checkout = async () => {
+  // The order itself is placed on the checkout page (delivery details are needed)
+  const checkout = () => {
+    closeCart();
     if (!authMember) {
-      closeCart();
       openLogin();
       return;
     }
-    setPlacing(true);
-    try {
-      await new OrderService().createOrder(cartItems);
-      onDeleteAll();
-      setOrderBuilder(new Date());
-      closeCart();
-      navigate("/orders");
-    } catch (err) {
-      sweetErrorHandling(new Error(t("cart.orderFailed"))).then();
-    } finally {
-      setPlacing(false);
-    }
+    navigate("/checkout");
   };
 
   return (
@@ -103,7 +90,7 @@ export default function CartDrawer({ openLogin }: { openLogin: () => void }) {
                 <div className="bo-cart__total"><dt>{t("cart.total")}</dt><dd>{formatPrice(subtotal + shipping)}</dd></div>
               </dl>
               {!authMember ? <p className="bo-muted bo-cart__hint">{t("cart.loginFirst")}</p> : null}
-              <button type="button" className="bo-btn bo-btn--primary bo-btn--lg" onClick={checkout} disabled={placing}>
+              <button type="button" className="bo-btn bo-btn--primary bo-btn--lg" onClick={checkout}>
                 {authMember ? t("cart.checkout") : t("common.login")}
               </button>
               <button type="button" className="bo-cart__clear" onClick={onDeleteAll}>{t("cart.clear")}</button>

@@ -4,6 +4,12 @@ import { serverApi } from "../../lib/config";
 import { CartItem } from "../../lib/types/search";
 import { Order, OrderInquiry, OrderItemInput, OrderUpdateInput } from "../../lib/types/order";
 
+export interface DeliveryInput {
+  phone: string;
+  address: string;
+  note: string;
+}
+
 class OrderService {
     private readonly path: string;
 
@@ -11,23 +17,21 @@ class OrderService {
         this.path = serverApi;
     }
 
-public async createOrder(input: CartItem[]): Promise<Order> {
+/** Checkout: the server re-prices items and checks stock */
+public async createOrder(input: CartItem[], delivery: DeliveryInput, saveToProfile: boolean): Promise<Order> {
     try {
-      const orderItems: OrderItemInput[] = input.map((cartItem: CartItem) => {
-        return {
-         itemQuantity: cartItem.quantity,
-         itemPrice: cartItem.price,
-         productId: cartItem._id, 
-        };
-      });
+      const items: OrderItemInput[] = input.map((cartItem: CartItem) => ({
+        itemQuantity: cartItem.quantity,
+        itemPrice: cartItem.price,
+        productId: cartItem._id,
+      }));
 
       const url = `${this.path}/order/create`;
-      const result = await axios.post(url, orderItems, {
+      const result = await axios.post(url, { items, delivery, saveToProfile }, {
         withCredentials: true
     });
 
-
-      return result.data;
+      return result.data.result;
     } catch(err) {
       console.log("Error. createOrder:", err);  
       throw err;
