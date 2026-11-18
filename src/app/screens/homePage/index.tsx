@@ -12,6 +12,7 @@ import BookCard, { BookCardSkeleton } from "../../components/ui/BookCard";
 import BookCover from "../../components/ui/BookCover";
 import { GirihMark, GirihPattern } from "../../components/ui/Girih";
 import { ArrowRightIcon, GlobeIcon, RouteIcon, TruckIcon } from "../../components/ui/Icons";
+import LivingBook from "./LivingBook";
 import "../../../css/home.css";
 
 const SHELVES = [ProductShelf.UZBEK_LIT, ProductShelf.CLASSIC, ProductShelf.GROWTH, ProductShelf.EVENING_TEA];
@@ -19,8 +20,6 @@ const GENRES = [
   ProductCollection.FICTION, ProductCollection.SCIENCE, ProductCollection.HISTORY, ProductCollection.BIOGRAPHY,
   ProductCollection.CHILDREN, ProductCollection.RELIGION, ProductCollection.TEXTBOOK, ProductCollection.OTHER,
 ];
-/** width, height, tilt of the books standing on the hero shelf */
-const SHELF_LAYOUT: [number, number, number][] = [[132, 206, -4], [124, 236, 2], [150, 252, -1], [120, 214, 3], [140, 230, -2]];
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -74,33 +73,7 @@ export default function HomePage() {
             </div>
             <span className="bo-hero__langs">UZ · RU · EN</span>
           </div>
-          <div className="bo-hero__shelf" aria-hidden={heroBooks.length === 0}>
-            <div className="bo-hero__books">
-              {heroBooks.map((book, i) => {
-                const [w, h, tilt] = SHELF_LAYOUT[i];
-                return (
-                  <Link
-                    key={book._id}
-                    to={`/products/${book._id}`}
-                    className="bo-hero__book"
-                    style={{ width: w, height: h, transform: `rotate(${tilt}deg)` }}
-                    aria-label={book.productName}
-                  >
-                    <BookCover
-                      id={book._id}
-                      title={book.productName}
-                      author={displayAuthor(book.productAuthor)}
-                      image={book.productImages?.[0]}
-                      ratio="auto"
-                      titleSize={15}
-                      style={{ height: "100%" }}
-                    />
-                  </Link>
-                );
-              })}
-            </div>
-            <div className="bo-hero__plank" />
-          </div>
+          <LivingBook books={heroBooks} />
         </div>
       </section>
 

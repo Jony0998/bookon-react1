@@ -16,6 +16,9 @@ const KNOWN: Record<string, string> = {
   "Please wait a minute before trying again!": "errors.tooMany",
   "You have been blocked! Please contact the library.": "errors.blocked",
   "Invalid input provided!": "errors.invalidInput",
+  "Phone must be 7-15 digits, optionally starting with +!": "errors.invalidPhone",
+  "Only jpg, jpeg, png and webp images up to 5MB are allowed!": "errors.badImage",
+  "Wrong password!": "errors.wrongPassword",
 };
 
 export const apiErrorText = (err: unknown, t: TFunction): string => {

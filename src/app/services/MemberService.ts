@@ -75,6 +75,10 @@ class MemberService {
    await axios.post(`${this.path}/member/forgot-password`, { memberEmail, lang });
  }
 
+ public async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+   await axios.post(`${this.path}/member/change-password`, { currentPassword, newPassword }, { withCredentials: true });
+ }
+
  public async resetPassword(token: string, memberPassword: string): Promise<void> {
    await axios.post(`${this.path}/member/reset-password`, { token, memberPassword });
  }
