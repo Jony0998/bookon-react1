@@ -47,21 +47,8 @@
   appearance: none;
   cursor: pointer;
 }
-.bo-catalog__more { display: flex; justify-content: center; margin-top: 32px; }
+.bo-catalog__more { display: flex; justify-content: center; margin-top: 32px; } /* also defined in components.css */
 
-/* ---------- Breadcrumbs ---------- */
-.bo-crumbs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 28px;
-  font-size: 14px;
-  color: var(--ink2);
-  font-family: var(--font-ui);
-}
-.bo-crumbs a { color: var(--ink2); text-decoration: none; }
-.bo-crumbs a:hover { color: var(--accent); }
-.bo-crumbs [aria-current] { color: var(--ink); font-weight: 700; }
 
 /* ---------- Book page ---------- */
 .bo-book {

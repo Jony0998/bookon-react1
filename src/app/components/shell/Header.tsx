@@ -51,6 +51,7 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
   const links = [
     { to: "/", label: t("common.home"), end: true },
     { to: "/products", label: t("common.books") },
+    { to: "/news", label: t("common.news") },
     ...(authMember ? [{ to: "/orders", label: t("common.orders") }] : []),
     { to: "/help", label: t("common.help") },
   ];

@@ -187,3 +187,20 @@
   .bo-book-card .bo-cover__author { font-size: 9px; }
   .bo-book-card__price strong { font-size: 18px; }
 }
+
+/* ---------- Breadcrumbs ---------- */
+.bo-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  color: var(--ink2);
+  font-family: var(--font-ui);
+}
+.bo-crumbs a { color: var(--ink2); text-decoration: none; }
+.bo-crumbs a:hover { color: var(--accent); }
+.bo-crumbs [aria-current] { color: var(--ink); font-weight: 700; }
+
+/* 'Show more' row under paged lists (catalog, news) */
+.bo-catalog__more { display: flex; justify-content: center; margin-top: 32px; }

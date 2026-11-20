@@ -14,6 +14,7 @@ export default function Footer() {
         </div>
         <nav aria-label="Footer" className="bo-footer__nav">
           <Link to="/products">{t("common.books")}</Link>
+          <Link to="/news">{t("common.news")}</Link>
           <Link to="/orders">{t("common.orders")}</Link>
           <Link to="/help">{t("common.help")}</Link>
         </nav>

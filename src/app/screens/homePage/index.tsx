@@ -13,7 +13,11 @@ import BookCover from "../../components/ui/BookCover";
 import { GirihMark, GirihPattern } from "../../components/ui/Girih";
 import { ArrowRightIcon, GlobeIcon, RouteIcon, TruckIcon } from "../../components/ui/Icons";
 import LivingBook from "./LivingBook";
+import ArticleService from "../../services/ArticleService";
+import { ArticleCard } from "../../../lib/types/article";
+import { ArticleCardView } from "../newsPage/parts";
 import "../../../css/home.css";
+import "../../../css/news.css";
 
 const SHELVES = [ProductShelf.UZBEK_LIT, ProductShelf.CLASSIC, ProductShelf.GROWTH, ProductShelf.EVENING_TEA];
 const GENRES = [
@@ -28,6 +32,7 @@ export default function HomePage() {
   const [shelves, setShelves] = useState<Partial<Record<ProductShelf, Product[]>>>({});
   const [shelf, setShelf] = useState<ProductShelf | null>(null);
   const [readers, setReaders] = useState<Member[]>([]);
+  const [news, setNews] = useState<ArticleCard[]>([]);
 
   useEffect(() => {
     const products = new ProductService();
@@ -46,6 +51,7 @@ export default function HomePage() {
       setShelf((current) => current ?? (SHELVES.find((key) => filled[key]) || null));
     });
     new MemberService().getTopUsers().then(setReaders).catch(() => setReaders([]));
+    new ArticleService().getArticles({ page: 1, limit: 3 }).then(setNews).catch(() => setNews([]));
   }, []);
 
   const heroBooks = useMemo(() => (popular || []).slice(0, 5), [popular]);
@@ -131,6 +137,19 @@ export default function HomePage() {
 
       {/* MOST READ */}
       <BookRow title={t("home.popularTitle")} books={popular} count={8} />
+
+      {/* LATEST NEWS — only when the library has published something */}
+      {news.length ? (
+        <section className="bo-wrap bo-section">
+          <div className="bo-section__head">
+            <h2 className="bo-section-title">{t("news.latest")}</h2>
+            <Link to="/news" className="bo-link-arrow">{t("news.allNews")} <ArrowRightIcon size={16} /></Link>
+          </div>
+          <div className="bo-home-news">
+            {news.map((article) => <ArticleCardView key={article._id} article={article} />)}
+          </div>
+        </section>
+      ) : null}
 
       {/* ACTIVE READERS */}
       {readers.length ? (
