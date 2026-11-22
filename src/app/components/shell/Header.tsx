@@ -9,9 +9,10 @@ import { useCart } from "../../context/CartContext";
 import { useThemeMode } from "../../context/ThemeContext";
 import { LANGUAGES } from "../../../i18n";
 import { serverApi } from "../../../lib/config";
+import InquiryService, { INQUIRY_READ_EVENT } from "../../services/InquiryService";
 import { BrandWordmark, GirihMark } from "../ui/Girih";
 import {
-  BoxIcon, CartIcon, CloseIcon, HeartIcon, LogoutIcon, MenuIcon, MoonIcon, SearchIcon, SunIcon, UserIcon,
+  BoxIcon, CartIcon, ChatIcon, CloseIcon, HeartIcon, LogoutIcon, MenuIcon, MoonIcon, SearchIcon, SunIcon, UserIcon,
 } from "../ui/Icons";
 
 interface HeaderProps {
@@ -47,14 +48,34 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
     setMobileOpen(false);
   }, [location.pathname]);
 
+  // Library replies the reader hasn't opened yet (checked on every page change)
+  const [unread, setUnread] = useState(0);
+  useEffect(() => {
+    if (!authMember) {
+      setUnread(0);
+      return;
+    }
+    let alive = true;
+    const refresh = () => new InquiryService().getUnread().then((n) => alive && setUnread(n)).catch(() => {});
+    refresh();
+    // A conversation page tells us when it has marked a reply as read
+    window.addEventListener(INQUIRY_READ_EVENT, refresh);
+    return () => {
+      alive = false;
+      window.removeEventListener(INQUIRY_READ_EVENT, refresh);
+    };
+  }, [authMember, location.pathname]);
+
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const links = [
     { to: "/", label: t("common.home"), end: true },
     { to: "/products", label: t("common.books") },
     { to: "/news", label: t("common.news") },
     ...(authMember ? [{ to: "/orders", label: t("common.orders") }] : []),
-    { to: "/help", label: t("common.help") },
+    { to: "/reception", label: t("common.reception") },
   ];
+  // The header row has no room for Help; it stays in the drawer, the footer and the reception page
+  const drawerLinks = [...links, { to: "/help", label: t("common.help") }];
 
   const submitSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -149,6 +170,7 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
                   alt=""
                   onError={(e) => ((e.target as HTMLImageElement).src = "/icons/default-user.svg")}
                 />
+                {unread > 0 ? <span className="bo-badge" aria-hidden="true">{unread}</span> : null}
               </button>
               <Menu
                 anchorEl={accountEl}
@@ -163,6 +185,10 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
                 <MenuItem onClick={() => navigate("/member-page")}><UserIcon size={18} />{t("common.myPage")}</MenuItem>
                 <MenuItem onClick={() => navigate("/orders")}><BoxIcon size={18} />{t("common.orders")}</MenuItem>
                 <MenuItem onClick={() => navigate("/wishlist")}><HeartIcon size={18} />{t("common.wishlist")}</MenuItem>
+                <MenuItem onClick={() => navigate("/reception")}>
+                  <ChatIcon size={18} />{t("reception.mineTitle")}
+                  {unread > 0 ? <span className="bo-menu-count">{unread}</span> : null}
+                </MenuItem>
                 <MenuItem onClick={onLogout} sx={{ color: "var(--danger)" }}><LogoutIcon size={18} />{t("common.logout")}</MenuItem>
               </Menu>
             </>
@@ -189,7 +215,7 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
           </div>
           {searchForm("bo-search bo-search--mobile")}
           <nav aria-label={t("common.menu")}>
-            {links.map((link) => (
+            {drawerLinks.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className={({ isActive }) => (isActive ? "is-active" : undefined)}>
                 {link.label}
               </NavLink>

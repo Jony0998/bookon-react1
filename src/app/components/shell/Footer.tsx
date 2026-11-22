@@ -17,6 +17,7 @@ export default function Footer() {
           <Link to="/news">{t("common.news")}</Link>
           <Link to="/orders">{t("common.orders")}</Link>
           <Link to="/help">{t("common.help")}</Link>
+          <Link to="/reception">{t("common.reception")}</Link>
         </nav>
       </div>
       <div className="bo-wrap bo-footer__legal">

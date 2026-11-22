@@ -17,6 +17,7 @@ const HelpPage = lazy(() => import("./screens/helpPage"));
 const WishlistPage = lazy(() => import("./screens/wishlistPage"));
 const CheckoutPage = lazy(() => import("./screens/checkoutPage"));
 const NewsPage = lazy(() => import("./screens/newsPage"));
+const ReceptionPage = lazy(() => import("./screens/receptionPage"));
 const VerifyEmailPage = lazy(() => import("./screens/authPages/VerifyEmail"));
 const ResetPasswordPage = lazy(() => import("./screens/authPages/ResetPassword"));
 const NotFoundPage = lazy(() => import("./screens/notFoundPage"));
@@ -55,6 +56,7 @@ function App() {
           <Route path="/news/*" element={<NewsPage />} />
           <Route path="/other-member-page/:memberId" element={<OtherMemberPage />} />
           <Route path="/help/*" element={<HelpPage />} />
+          <Route path="/reception/*" element={<ReceptionPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage openLogin={openLogin} />} />
           <Route path="*" element={<NotFoundPage />} />

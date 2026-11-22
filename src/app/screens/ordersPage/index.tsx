@@ -11,7 +11,7 @@ import { formatDate, formatPrice } from "../../../lib/format";
 import { serverApi } from "../../../lib/config";
 import BookCover from "../../components/ui/BookCover";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
-import { BoxIcon, CheckIcon, RouteIcon, TruckIcon } from "../../components/ui/Icons";
+import { BoxIcon, ChatIcon, CheckIcon, RouteIcon, TruckIcon } from "../../components/ui/Icons";
 import "../../../css/account.css";
 
 const PAGE_SIZE = 10;
@@ -246,6 +246,9 @@ function OrderCard({ order, lang, onAction }: { order: Order; lang: string; onAc
           <div className="is-total"><dt>{t("orders.total")}</dt><dd>{formatPrice(order.orderTotal)}</dd></div>
         </dl>
         <div className="bo-order__actions">
+          <Link to={`/reception?topic=ORDER&order=${order._id}`} className="bo-btn bo-btn--ghost">
+            <ChatIcon size={18} /> {t("orders.ask")}
+          </Link>
           {/* Confirming is the library's job now; the reader can only cancel while pending */}
           {order.orderStatus === OrderStatus.PAUSE ? (
             <button type="button" className="bo-btn bo-btn--ghost" onClick={() => onAction(OrderStatus.DELETE)}>{t("orders.cancel")}</button>

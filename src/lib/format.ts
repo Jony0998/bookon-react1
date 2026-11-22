@@ -25,6 +25,12 @@ export const formatDate = (value: Date | string, lang: string) => {
   return new Intl.DateTimeFormat(lang, { day: "numeric", month: "long", year: "numeric" }).format(date);
 };
 
+/** The library's phone, only when it really looks like one (the field once held a name) */
+export const realPhone = (value?: string) => (value && /^\+?[\d\s()-]{7,}$/.test(value.trim()) ? value.trim() : "");
+
+/** "#A1B2C3" — the short order number readers and the library both see */
+export const orderNo = (id: string) => `#${id.slice(-6).toUpperCase()}`;
+
 /** Placeholder author written by the book-fields migration; hide it from readers */
 export const displayAuthor = (author?: string): string =>
   author && author.trim().toLowerCase() !== "unknown" ? author : "";

@@ -1,34 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import MemberService from "../../services/MemberService";
-import { Member } from "../../../lib/types/member";
 import { FREE_SHIPPING_FROM, SHIPPING_FEE, formatPrice } from "../../../lib/format";
 import { GirihPattern } from "../../components/ui/Girih";
+import { ChatIcon } from "../../components/ui/Icons";
 import "../../../css/account.css";
+import "../../../css/reception.css";
 
-type Tab = "faq" | "terms" | "contact";
-/** Show the library phone only when it really looks like one */
-const realPhone = (value?: string) => (value && /^\+?[\d\s()-]{7,}$/.test(value.trim()) ? value.trim() : "");
+type Tab = "faq" | "terms";
 
 export default function HelpPage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("faq");
-  const [library, setLibrary] = useState<Member | null>(null);
-
-  useEffect(() => {
-    new MemberService().getLibrary().then(setLibrary).catch(() => setLibrary(null));
-  }, []);
 
   const faq = t("help.faq", { returnObjects: true, amount: formatPrice(FREE_SHIPPING_FROM), fee: formatPrice(SHIPPING_FEE) }) as { q: string; a: string }[];
   const terms = t("help.terms", { returnObjects: true }) as string[];
-  const phone = realPhone(library?.memberPhone);
-  const address = library?.memberAddress?.trim() ?? "";
-  const hasContact = !!(phone || address);
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "faq", label: t("help.tabFaq") },
     { key: "terms", label: t("help.tabTerms") },
-    ...(hasContact ? [{ key: "contact" as Tab, label: t("help.tabContact") }] : []),
   ];
 
   return (
@@ -60,20 +50,20 @@ export default function HelpPage() {
                 </details>
               ))}
             </div>
-          ) : tab === "terms" ? (
+          ) : (
             <ol className="bo-card bo-terms">
               {terms.map((term) => <li key={term}>{term}</li>)}
             </ol>
-          ) : (
-            <div className="bo-card bo-contact">
-              <h2 className="bo-side-card__title">{t("help.contactTitle")}</h2>
-              <dl>
-                {phone ? <div><dt>{t("help.contactPhone")}</dt><dd><a href={`tel:${phone.replace(/[^\d+]/g, "")}`}>{phone}</a></dd></div> : null}
-                {address ? <div><dt>{t("help.contactAddress")}</dt><dd>{address}</dd></div> : null}
-              </dl>
-            </div>
           )}
         </div>
+
+        <section className="bo-card bo-help-cta">
+          <div>
+            <strong>{t("help.ctaTitle")}</strong>
+            <p className="bo-muted">{t("help.ctaText")}</p>
+          </div>
+          <Link to="/reception" className="bo-btn bo-btn--primary bo-btn--lg"><ChatIcon size={18} /> {t("help.ctaButton")}</Link>
+        </section>
       </div>
     </main>
   );

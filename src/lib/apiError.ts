@@ -21,6 +21,10 @@ const KNOWN: Record<string, string> = {
   "Wrong password!": "errors.wrongPassword",
   "Not enough copies in stock!": "errors.outOfStock",
   "Please enter a delivery address (5-200 characters)!": "errors.invalidAddress",
+  "Please enter your name (2-60 characters)!": "errors.invalidName",
+  "Please write your message (5-2000 characters)!": "errors.invalidMessage",
+  "You have sent several messages recently. Please wait for the answer or try again in an hour!": "errors.tooManyInquiries",
+  "This conversation is too long. Please start a new message!": "errors.inquiryTooLong",
 };
 
 export const apiErrorText = (err: unknown, t: TFunction): string => {
