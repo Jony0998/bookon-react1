@@ -1,7 +1,7 @@
 
 import axios from "axios";
 import { serverApi } from "../../lib/config";
-import { BookSuggestion, Product, ProductInquiry } from "../../lib/types/product";
+import { BookSuggestion, ForYou, Product, ProductInquiry, RecommendedBook } from "../../lib/types/product";
 
 class ProductService {
     private readonly path: string;
@@ -35,6 +35,20 @@ class ProductService {
  /** As-you-type suggestions (up to 6 books); `signal` cancels a stale request */
  public async suggest(query: string, signal?: AbortSignal): Promise<BookSuggestion[]> {
    const result = await axios.get(`${this.path}/product/suggest`, { params: { q: query }, signal });
+   return result.data;
+ }
+
+ /** "Similar books", each with the reason it is shown */
+ public async getSimilar(productId: string, limit = 8): Promise<RecommendedBook[]> {
+   const result = await axios.get(`${this.path}/product/${productId}/similar`, { params: { limit } });
+   return result.data;
+ }
+
+ /** "For you": the account's history (cookie) plus books this browser viewed */
+ public async getRecommended(seeds: string[], limit = 8): Promise<ForYou> {
+   const params: Record<string, string | number> = { limit };
+   if (seeds.length) params.seeds = seeds.join(",");
+   const result = await axios.get(`${this.path}/product/recommended`, { params, withCredentials: true });
    return result.data;
  }
 

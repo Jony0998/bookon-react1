@@ -29,6 +29,17 @@ export interface Product {
   updatedAt: Date;
 }
 
+/** Why a book is recommended (from the server's recommendation engine) */
+export interface RecoTag {
+  reason: "TOGETHER" | "AUTHOR" | "GENRE" | "SIMILAR" | "BECAUSE" | "POPULAR";
+  because?: { _id: string; productName: string };
+}
+export type RecommendedBook = Product & { recommendation: RecoTag };
+export interface ForYou {
+  basis: "history" | "seeds" | "popular";
+  items: RecommendedBook[];
+}
+
 /** A search suggestion: just what the dropdown shows */
 export type BookSuggestion = Pick<Product, "_id" | "productName" | "productAuthor" | "productImages" | "productPrice" | "productDiscountPrice" | "productLanguage">;
 

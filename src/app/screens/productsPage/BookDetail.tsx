@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ProductService from "../../services/ProductService";
-import { Product } from "../../../lib/types/product";
+import { Product, RecommendedBook } from "../../../lib/types/product";
+import { rememberViewed } from "../../../lib/recentlyViewed";
+import RecoNote from "../../components/ui/RecoNote";
 import { useGlobals } from "../../hooks/useGlobals";
 import { useCart } from "../../context/CartContext";
 import { FREE_SHIPPING_FROM, SHIPPING_FEE, displayAuthor, effectivePrice, formatPrice } from "../../../lib/format";
@@ -25,7 +27,7 @@ export default function BookDetail({ openLogin }: { openLogin: () => void }) {
   const [qty, setQty] = useState(1);
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
-  const [similar, setSimilar] = useState<Product[]>([]);
+  const [similar, setSimilar] = useState<RecommendedBook[]>([]);
 
   useEffect(() => {
     let alive = true;
@@ -41,10 +43,11 @@ export default function BookDetail({ openLogin }: { openLogin: () => void }) {
         setBook(data);
         setLikes(data.productLikes ?? 0);
         document.title = `${data.productName} — BookOn`;
+        rememberViewed(data._id);
         service
-          .getProducts({ page: 1, limit: 5, order: "productViews", productCollection: data.productCollection })
-          .then((list) => alive && setSimilar(list.filter((p) => p._id !== data._id).slice(0, 4)))
-          .catch(() => undefined);
+          .getSimilar(data._id, 8)
+          .then((list) => alive && setSimilar(list))
+          .catch(() => alive && setSimilar([]));
       })
       .catch(() => alive && setMissing(true));
     return () => {
@@ -230,7 +233,7 @@ export default function BookDetail({ openLogin }: { openLogin: () => void }) {
         <section className="bo-section" style={{ paddingBottom: 0 }}>
           <h2 className="bo-section-title" style={{ marginBottom: 24 }}>{t("book.similar")}</h2>
           <div className="bo-grid4">
-            {similar.map((p) => <BookCard key={p._id} product={p} />)}
+            {similar.map((p) => <BookCard key={p._id} product={p} note={<RecoNote tag={p.recommendation} />} />)}
           </div>
         </section>
       ) : null}

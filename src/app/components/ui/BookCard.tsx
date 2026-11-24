@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Product } from "../../../lib/types/product";
@@ -7,8 +7,8 @@ import { useCart } from "../../context/CartContext";
 import BookCover from "./BookCover";
 import { CheckIcon, PlusIcon } from "./Icons";
 
-/** Catalog card: cover, language, stock, title, author, price and add-to-cart */
-export default function BookCard({ product }: { product: Product }) {
+/** Catalog card: cover, language, stock, title, author, price and add-to-cart; `note` explains a recommendation */
+export default function BookCard({ product, note }: { product: Product; note?: ReactNode }) {
   const { t } = useTranslation();
   const { addProduct, isInCart, openCart } = useCart();
   const author = displayAuthor(product.productAuthor);
@@ -31,6 +31,7 @@ export default function BookCard({ product }: { product: Product }) {
         <span className="bo-muted">{soldOut ? t("common.outOfStock") : t("common.inStock", { count: product.productLeftCount })}</span>
       </div>
       <div className="bo-book-card__text">
+        {note ? <span className="bo-book-card__note">{note}</span> : null}
         <Link to={href} className="bo-book-card__title">{product.productName}</Link>
         {author ? <span className="bo-muted bo-book-card__author">{author}</span> : null}
       </div>

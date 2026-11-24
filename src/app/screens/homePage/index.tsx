@@ -16,6 +16,10 @@ import LivingBook from "./LivingBook";
 import ArticleService from "../../services/ArticleService";
 import { ArticleCard } from "../../../lib/types/article";
 import { ArticleCardView } from "../newsPage/parts";
+import { useGlobals } from "../../hooks/useGlobals";
+import { ForYou } from "../../../lib/types/product";
+import { recentlyViewed } from "../../../lib/recentlyViewed";
+import RecoNote from "../../components/ui/RecoNote";
 import "../../../css/home.css";
 import "../../../css/news.css";
 
@@ -53,6 +57,22 @@ export default function HomePage() {
     new MemberService().getTopUsers().then(setReaders).catch(() => setReaders([]));
     new ArticleService().getArticles({ page: 1, limit: 3 }).then(setNews).catch(() => setNews([]));
   }, []);
+
+  // "For you": the account's history and what this browser viewed. Shown only
+  // when it's really personal — the popular row below already covers the rest.
+  const { authMember } = useGlobals();
+  const [forYou, setForYou] = useState<ForYou | null>(null);
+  useEffect(() => {
+    let alive = true;
+    new ProductService()
+      .getRecommended(recentlyViewed(), 4)
+      .then((data) => alive && setForYou(data))
+      .catch(() => alive && setForYou(null));
+    return () => {
+      alive = false;
+    };
+  }, [authMember]);
+  const personal = forYou && forYou.basis !== "popular" ? forYou.items.filter((b) => b.recommendation.reason !== "POPULAR") : [];
 
   const heroBooks = useMemo(() => (popular || []).slice(0, 5), [popular]);
   const availableShelves = SHELVES.filter((key) => shelves[key]?.length);
@@ -118,6 +138,21 @@ export default function HomePage() {
 
       {/* NEW ARRIVALS */}
       <BookRow title={t("home.newTitle")} books={fresh} count={4} />
+
+      {/* FOR YOU — recommendations with the reason on every card */}
+      {personal.length ? (
+        <section className="bo-wrap bo-section" aria-labelledby="for-you">
+          <div className="bo-section__head">
+            <div>
+              <h2 className="bo-section-title" id="for-you">{t(forYou?.basis === "history" ? "reco.forYouTitle" : "reco.viewedTitle")}</h2>
+              <p className="bo-muted bo-section__sub">{t("reco.forYouSub")}</p>
+            </div>
+          </div>
+          <div className="bo-grid4">
+            {personal.map((book) => <BookCard key={book._id} product={book} note={<RecoNote tag={book.recommendation} />} />)}
+          </div>
+        </section>
+      ) : null}
 
       {/* GENRES */}
       <section className="bo-wrap bo-section">

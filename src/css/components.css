@@ -115,6 +115,21 @@
 }
 .bo-book-card__title:hover { color: var(--accent); }
 .bo-book-card__author { font-size: 14px; }
+/* why a recommended book is shown */
+.bo-book-card__note {
+  align-self: flex-start;
+  max-width: 100%;
+  margin-bottom: 2px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .bo-book-card__buy {
   margin-top: auto;
   display: flex;
