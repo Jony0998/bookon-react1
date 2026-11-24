@@ -9,6 +9,7 @@ import { formatDate } from "../../../lib/format";
 import { GirihMark } from "../../components/ui/Girih";
 import { ChatIcon, SendIcon } from "../../components/ui/Icons";
 import { StatusPill } from "./parts";
+import { useSocket, useSocketConnected, useSocketEvent } from "../../context/SocketContext";
 
 const REFRESH_MS = 30_000;
 
@@ -49,14 +50,55 @@ export default function ThreadPage() {
 
   useEffect(() => {
     load();
-    // New replies show up without reloading, but only while the tab is visible
+  }, [load]);
+
+  // ---- live: join this conversation's room; replies, typing and status are pushed
+  const socket = useSocket();
+  const live = useSocketConnected();
+  const [libraryTyping, setLibraryTyping] = useState(false);
+  const typingTimer = useRef<number>();
+  const lastTypingSent = useRef(0);
+
+  useEffect(() => {
+    if (!socket || !live) return;
+    socket.emit("inquiry:join", { id, key });
+    return () => {
+      socket.emit("inquiry:leave", { id });
+    };
+  }, [socket, live, id, key]);
+
+  // Without a live connection, check for replies every 30 s (only while the tab is visible)
+  useEffect(() => {
+    if (live) return;
     const timer = window.setInterval(() => {
       if (document.visibilityState === "visible") load();
     }, REFRESH_MS);
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, [load]);
+    return () => window.clearInterval(timer);
+  }, [live, load]);
+
+  useSocketEvent<{ inquiryId: string; message: { _id: string } }>("inquiry:message", (p) => {
+    if (p.inquiryId !== id) return;
+    setLibraryTyping(false);
+    // reload instead of appending: the server then also marks the reply as read
+    if (!inquiry?.inquiryMessages.some((m) => m._id === p.message._id)) load();
+  });
+  useSocketEvent<{ inquiryId: string; from: string }>("inquiry:typing", (p) => {
+    if (p.inquiryId !== id || p.from !== "LIBRARY") return;
+    setLibraryTyping(true);
+    window.clearTimeout(typingTimer.current);
+    typingTimer.current = window.setTimeout(() => setLibraryTyping(false), 4000);
+  });
+  useSocketEvent<{ inquiryId: string; status: Inquiry["inquiryStatus"] }>("inquiry:status", (p) => {
+    if (p.inquiryId === id) setInquiry((cur) => (cur ? { ...cur, inquiryStatus: p.status } : cur));
+  });
+  useEffect(() => () => window.clearTimeout(typingTimer.current), []);
+
+  const notifyTyping = () => {
+    const now = Date.now();
+    if (!socket || !live || now - lastTypingSent.current < 1500) return;
+    lastTypingSent.current = now;
+    socket.emit("inquiry:typing", { id });
+  };
 
   const count = inquiry?.inquiryMessages.length ?? 0;
   useEffect(() => {
@@ -121,7 +163,10 @@ export default function ThreadPage() {
           <h1 className="bo-section-title">{t(`reception.topics.${inquiry.inquiryTopic}`)}</h1>
           <p className="bo-muted">{formatDate(inquiry.createdAt, i18n.language)} · {inquiry.inquiryName}</p>
         </div>
-        <StatusPill status={inquiry.inquiryStatus} />
+        <div className="bo-thread__status">
+          {live ? <span className="bo-live" title={t("reception.liveHint")}><i aria-hidden="true" />{t("reception.live")}</span> : null}
+          <StatusPill status={inquiry.inquiryStatus} />
+        </div>
       </header>
 
       <section className="bo-card bo-thread__card" aria-label={t("reception.mineTitle")}>
@@ -140,7 +185,14 @@ export default function ThreadPage() {
           })}
         </ol>
 
-        {last?.messageFrom === "READER" && inquiry.inquiryStatus !== "CLOSED" ? (
+        {libraryTyping ? (
+          <p className="bo-typing" aria-live="polite">
+            <span className="bo-typing__dots" aria-hidden="true"><i /><i /><i /></span>
+            {t("reception.typing")}
+          </p>
+        ) : null}
+
+        {!libraryTyping && last?.messageFrom === "READER" && inquiry.inquiryStatus !== "CLOSED" ? (
           <p className="bo-thread__note">{t("reception.waitingNote")}</p>
         ) : null}
         {inquiry.inquiryStatus === "CLOSED" ? <p className="bo-thread__note">{t("reception.closedNote")}</p> : null}
@@ -154,7 +206,7 @@ export default function ThreadPage() {
             value={text}
             maxLength={MESSAGE_MAX}
             placeholder={t("reception.replyPlaceholder")}
-            onChange={(e) => { setText(e.target.value); setError(""); }}
+            onChange={(e) => { setText(e.target.value); setError(""); notifyTyping(); }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) send();
             }}

@@ -96,6 +96,19 @@ a.bo-reception__contact { color: var(--accent); }
 .bo-thread__reply { padding: 18px 28px 24px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
 .bo-thread__reply-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 
+/* Live conversation */
+.bo-thread__status { display: flex; align-items: center; gap: 10px; }
+.bo-live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--ok); }
+.bo-live i { width: 8px; height: 8px; border-radius: 99px; background: currentColor; box-shadow: 0 0 0 0 currentColor; animation: bo-live-pulse 2s infinite; }
+@keyframes bo-live-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 50%, transparent); } 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.bo-typing { margin: 0 28px 16px; display: inline-flex; align-items: center; gap: 10px; color: var(--accent); font-size: 14px; font-weight: 700; }
+.bo-typing__dots { display: inline-flex; gap: 4px; padding: 10px 12px; border-radius: 4px 14px 14px 14px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.bo-typing__dots i { width: 6px; height: 6px; border-radius: 99px; background: var(--accent); animation: bo-typing 1.2s infinite ease-in-out; }
+.bo-typing__dots i:nth-child(2) { animation-delay: 0.15s; }
+.bo-typing__dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bo-typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .bo-live i, .bo-typing__dots i { animation: none; } }
+
 /* Help page: send people here */
 .bo-help-cta { max-width: 860px; padding: 24px 28px; border-radius: var(--radius-lg); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
 .bo-help-cta strong { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 600; }

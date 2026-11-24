@@ -368,6 +368,17 @@ const uz = {
     waitingNote: "Kutubxona xabaringizni oldi — javobni shu yerda koʻrasiz.",
     closedNote: "Bu murojaat yopilgan. Yana yozsangiz, u qayta ochiladi.",
     notFound: "Yozishma topilmadi. Havolani toʻliq nusxalaganingizni tekshiring.",
+    typing: "Kutubxona yozmoqda…",
+    live: "Jonli",
+    liveHint: "Javoblar sahifani yangilamasdan chiqadi",
+  },
+  live: {
+    orderTitle: "Buyurtma {{no}}",
+    orderStatus: { PAUSE: "Tasdiq kutilmoqda", PROCESS: "Tasdiqlandi va yoʻlga chiqdi", FINISH: "Yetkazildi", DELETE: "Bekor qilindi" },
+    openOrders: "Buyurtmalarim",
+    replyTitle: "Kutubxona javob berdi",
+    replyText: "Murojaatingizga yangi javob keldi.",
+    openReply: "Javobni oʻqish",
   },
   auth: {
     loginTitle: "Xush kelibsiz",

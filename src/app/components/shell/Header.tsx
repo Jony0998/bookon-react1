@@ -11,6 +11,7 @@ import { useThemeMode } from "../../context/ThemeContext";
 import { LANGUAGES } from "../../../i18n";
 import { serverApi } from "../../../lib/config";
 import InquiryService, { INQUIRY_READ_EVENT } from "../../services/InquiryService";
+import { useSocketEvent } from "../../context/SocketContext";
 import { BrandWordmark, GirihMark } from "../ui/Girih";
 import {
   BoxIcon, CartIcon, ChatIcon, CloseIcon, HeartIcon, LogoutIcon, MenuIcon, MoonIcon, SunIcon, UserIcon,
@@ -66,6 +67,8 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
       window.removeEventListener(INQUIRY_READ_EVENT, refresh);
     };
   }, [authMember, location.pathname]);
+  // the server pushes the new count as soon as the library replies
+  useSocketEvent<{ unread: number }>("inquiry:unread", (p) => setUnread(Number(p.unread) || 0));
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const links = [

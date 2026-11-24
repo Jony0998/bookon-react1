@@ -369,6 +369,17 @@ const en: Locale = {
     waitingNote: "The library has your message — the reply will appear here.",
     closedNote: "This conversation is closed. Writing again will reopen it.",
     notFound: "Conversation not found. Check that the whole link was copied.",
+    typing: "The library is typing…",
+    live: "Live",
+    liveHint: "Replies appear without reloading the page",
+  },
+  live: {
+    orderTitle: "Order {{no}}",
+    orderStatus: { PAUSE: "Waiting for confirmation", PROCESS: "Confirmed and on the way", FINISH: "Delivered", DELETE: "Cancelled" },
+    openOrders: "My orders",
+    replyTitle: "The library replied",
+    replyText: "Your question has a new reply.",
+    openReply: "Read the reply",
   },
   auth: {
     loginTitle: "Welcome back",

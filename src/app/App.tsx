@@ -4,6 +4,8 @@ import HomePage from "./screens/homePage";
 import Header from "./components/shell/Header";
 import Footer from "./components/shell/Footer";
 import CartDrawer from "./components/shell/CartDrawer";
+import { ToastProvider } from "./components/shell/Toasts";
+import RealtimeBridge from "./components/shell/RealtimeBridge";
 import AuthModal, { AuthMode } from "./components/auth";
 import MemberService from "./services/MemberService";
 import { useGlobals } from "./hooks/useGlobals";
@@ -42,7 +44,9 @@ function App() {
   };
 
   return (
+    <ToastProvider>
     <div className="bo-root">
+      <RealtimeBridge />
       <Header openLogin={openLogin} openSignup={openSignup} onLogout={logout} />
 
       <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
@@ -67,6 +71,7 @@ function App() {
       <CartDrawer openLogin={openLogin} />
       <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />
     </div>
+    </ToastProvider>
   );
 }
 
