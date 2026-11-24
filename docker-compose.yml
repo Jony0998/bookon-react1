@@ -7,8 +7,9 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
+    # Served to the internet only through nginx (HTTPS) on this host
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     networks:
       - bookon-network
 
