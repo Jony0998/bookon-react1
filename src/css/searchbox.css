@@ -1,0 +1,66 @@
+/* Search box with as-you-type suggestions */
+.bo-searchbox { position: relative; }
+
+.bo-suggest {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 60;
+  width: max(100%, 400px);
+  max-width: calc(100vw - 32px);
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: bo-suggest-in 0.16s var(--ease);
+}
+.bo-suggest[hidden] { display: none; }
+@keyframes bo-suggest-in { from { opacity: 0; transform: translateY(-4px); } }
+
+.bo-suggest__list { list-style: none; margin: 0; padding: 6px; display: flex; flex-direction: column; }
+
+.bo-suggest__item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.bo-suggest__item[aria-selected="true"] { background: var(--surface2); }
+.bo-suggest__cover { display: block; width: 34px; }
+.bo-suggest__cover .bo-cover { border-radius: 2px 5px 5px 2px; box-shadow: none; }
+.bo-suggest__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bo-suggest__title { font-family: var(--font-display); font-weight: 600; font-size: 15px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-suggest__author { font-size: 13px; color: var(--ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-suggest__price { font-weight: 800; font-size: 14px; }
+.bo-suggest mark { background: color-mix(in srgb, var(--gold) 35%, transparent); color: inherit; border-radius: 3px; padding: 0 1px; }
+
+.bo-suggest__empty { padding: 14px 12px; color: var(--ink2); font-size: 14px; }
+
+.bo-suggest__all {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 12px 12px;
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.bo-suggest__all[aria-selected="true"] { background: var(--surface2); }
+
+/* In the mobile drawer the list fills the drawer width */
+.bo-search--mobile .bo-suggest { width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bo-suggest { animation: none; }
+}

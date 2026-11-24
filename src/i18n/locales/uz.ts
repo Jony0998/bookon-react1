@@ -111,12 +111,18 @@ const uz = {
     sortCheap: "Avval arzonlari",
     sortPopular: "Koʻp koʻrilgan",
     sortLiked: "Koʻp yoqtirilgan",
+    sortRelevant: "Eng mos",
     resultsFor: "“{{q}}” boʻyicha natijalar",
     clearSearch: "Qidiruvni tozalash",
     empty: "Bu shartlarga mos kitob topilmadi.",
     emptyHint: "Filtrlarni oʻzgartirib koʻring.",
     reset: "Filtrlarni tozalash",
     loadMore: "Yana koʻrsatish",
+  },
+  search: {
+    suggestions: "Qidiruv takliflari",
+    seeAll: "“{{q}}” boʻyicha barcha natijalar",
+    noResults: "Hech narsa topilmadi. Boshqacha yozib koʻring.",
   },
   book: {
     author: "Muallif",

@@ -1,7 +1,7 @@
 
 import axios from "axios";
 import { serverApi } from "../../lib/config";
-import { Product, ProductInquiry } from "../../lib/types/product";
+import { BookSuggestion, Product, ProductInquiry } from "../../lib/types/product";
 
 class ProductService {
     private readonly path: string;
@@ -30,6 +30,12 @@ class ProductService {
       console.log("Error, getProduct:", err)
       throw err; 
    }
+ }
+
+ /** As-you-type suggestions (up to 6 books); `signal` cancels a stale request */
+ public async suggest(query: string, signal?: AbortSignal): Promise<BookSuggestion[]> {
+   const result = await axios.get(`${this.path}/product/suggest`, { params: { q: query }, signal });
+   return result.data;
  }
 
  public async getProduct(productId: string): Promise<Product> {

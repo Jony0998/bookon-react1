@@ -1,4 +1,5 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import SearchBox from "../ui/SearchBox";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Drawer from "@mui/material/Drawer";
@@ -12,7 +13,7 @@ import { serverApi } from "../../../lib/config";
 import InquiryService, { INQUIRY_READ_EVENT } from "../../services/InquiryService";
 import { BrandWordmark, GirihMark } from "../ui/Girih";
 import {
-  BoxIcon, CartIcon, ChatIcon, CloseIcon, HeartIcon, LogoutIcon, MenuIcon, MoonIcon, SearchIcon, SunIcon, UserIcon,
+  BoxIcon, CartIcon, ChatIcon, CloseIcon, HeartIcon, LogoutIcon, MenuIcon, MoonIcon, SunIcon, UserIcon,
 } from "../ui/Icons";
 
 interface HeaderProps {
@@ -77,26 +78,13 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
   // The header row has no room for Help; it stays in the drawer, the footer and the reception page
   const drawerLinks = [...links, { to: "/help", label: t("common.help") }];
 
-  const submitSearch = (e: FormEvent) => {
-    e.preventDefault();
-    const q = query.trim();
+  const submitSearch = (q: string) => {
     navigate(q ? `/products?search=${encodeURIComponent(q)}` : "/products");
     setMobileOpen(false);
   };
 
-  const searchForm = (className: string) => (
-    <form role="search" className={className} onSubmit={submitSearch}>
-      <SearchIcon size={18} />
-      <label className="bo-sr-only" htmlFor={`${className}-q`}>{t("common.search")}</label>
-      <input
-        id={`${className}-q`}
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={t("common.searchPlaceholder")}
-        maxLength={100}
-      />
-    </form>
+  const searchForm = (className: string, id: string) => (
+    <SearchBox id={id} className={className} value={query} onChange={setQuery} onSubmit={submitSearch} />
   );
 
   const langSwitch = (
@@ -137,7 +125,7 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
         </nav>
 
         {/* The catalog has its own, larger search box */}
-        {location.pathname === "/products" ? <span className="bo-search-spacer" /> : searchForm("bo-search")}
+        {location.pathname === "/products" ? <span className="bo-search-spacer" /> : searchForm("bo-search", "header-q")}
 
         <div className="bo-header__tools">
           <span className="bo-header__lang-desktop">{langSwitch}</span>
@@ -213,7 +201,7 @@ export default function Header({ openLogin, openSignup, onLogout }: HeaderProps)
               <CloseIcon />
             </button>
           </div>
-          {searchForm("bo-search bo-search--mobile")}
+          {searchForm("bo-search bo-search--mobile", "drawer-q")}
           <nav aria-label={t("common.menu")}>
             {drawerLinks.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className={({ isActive }) => (isActive ? "is-active" : undefined)}>

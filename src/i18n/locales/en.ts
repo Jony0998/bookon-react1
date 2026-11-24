@@ -112,12 +112,18 @@ const en: Locale = {
     sortCheap: "Lowest price",
     sortPopular: "Most viewed",
     sortLiked: "Most liked",
+    sortRelevant: "Best match",
     resultsFor: "Results for “{{q}}”",
     clearSearch: "Clear search",
     empty: "No books match these filters.",
     emptyHint: "Try changing the filters.",
     reset: "Reset filters",
     loadMore: "Show more",
+  },
+  search: {
+    suggestions: "Search suggestions",
+    seeAll: "All results for “{{q}}”",
+    noResults: "Nothing found. Try another spelling.",
   },
   book: {
     author: "Author",

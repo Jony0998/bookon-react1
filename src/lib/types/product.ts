@@ -29,6 +29,9 @@ export interface Product {
   updatedAt: Date;
 }
 
+/** A search suggestion: just what the dropdown shows */
+export type BookSuggestion = Pick<Product, "_id" | "productName" | "productAuthor" | "productImages" | "productPrice" | "productDiscountPrice" | "productLanguage">;
+
 export interface ProductInquiry {
   order: string;
   page: number;
